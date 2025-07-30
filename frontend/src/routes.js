@@ -7,7 +7,7 @@ import Profile from "views/admin/profile";
 import DataTables from "views/admin/tables";
 
 // Auth Imports
-import SignIn from "views/auth/SignIn";
+import Login from "views/auth/Login";
 
 // Icon Imports
 import {
@@ -49,11 +49,11 @@ const routes = [
     component: <Profile />,
   },
   {
-    name: "Sign In",
+    name: "Login",
     layout: "/auth",
-    path: "sign-in",
+    path: "login",
     icon: <MdLock className="h-6 w-6" />,
-    component: <SignIn />,
+    component: <Login />,
   },
 ];
 export default routes;
