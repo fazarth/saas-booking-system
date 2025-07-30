@@ -1,8 +1,8 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/db");
 
 const Role = sequelize.define(
-  'Role',
+  "role",
   {
     UniqueID: {
       type: DataTypes.INTEGER,
@@ -15,7 +15,7 @@ const Role = sequelize.define(
     },
   },
   {
-    tableName: 'Role',
+    tableName: "role",
     timestamps: false,
   }
 );

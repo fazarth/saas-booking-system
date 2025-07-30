@@ -1,8 +1,8 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/db");
 
 const User = sequelize.define(
-  'User',
+  "user",
   {
     UniqueID: {
       type: DataTypes.INTEGER,
@@ -28,13 +28,13 @@ const User = sequelize.define(
     RoleId: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'Role',
-        key: 'UniqueID',
+        model: "Role",
+        key: "UniqueID",
       },
     },
   },
   {
-    tableName: 'User',
+    tableName: "User",
     timestamps: false,
   }
 );

@@ -1,26 +1,30 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
-const sequelize = require('./config/db');
-// const userRoutes = require('./routes/userRoutes');
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
-const db = require('./models');
-const userRoutes = require('./routes/userRoutes');
+const userRoutes = require("./routes/userRoutes");
+app.use("/api/users", userRoutes);
 
-app.use('/api/users', userRoutes);
+const db = require("./models");
 
 db.sequelize
   .authenticate()
   .then(() => {
-    console.log('MySQL Connected');
-    return sequelize.sync(); // auto create table jika belum ada tapi harus tetep create db terlebih dahulu dengan nama lms_db
-    // return sequelize.sync({ force: true }); // buat ulang semua tabel, ! hati-hati, gunakan ketika masih tahap awal pengembangan, kalau sudah banyak tabel jangan digunakan karena akan menghapus semua tabel
+    console.log("✅ MySQL Connected");
+
+    return db.sequelize.sync();
   })
   .then(() => {
-    app.listen(5000, () => console.log('Server running on port 5000'));
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
   })
-  .catch((err) => console.error('Database Error:', err));
+  .catch((error) => {
+    console.error("Database Error:", error);
+  });
