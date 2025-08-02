@@ -1,8 +1,8 @@
-module.exports = function authorizeRole(...allowedIds) {
+const authorizeRole = (requiredRoleName) => {
   return (req, res, next) => {
-    const userRoleId = req.user?.roleId;
+    const userRoleName = req.user?.role;
 
-    if (!allowedIds.includes(userRoleId)) {
+    if (userRoleName !== requiredRoleName) {
       return res
         .status(403)
         .json({ message: "Akses ditolak. Role tidak diizinkan." });
@@ -11,3 +11,5 @@ module.exports = function authorizeRole(...allowedIds) {
     next();
   };
 };
+
+module.exports = authorizeRole;

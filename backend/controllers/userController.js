@@ -5,6 +5,44 @@ const Role = require("../models/role");
 
 User.belongsTo(Role, { foreignKey: "RoleId" });
 
+/**
+ * @swagger
+ * tags:
+ *   - name: User
+ *     description: User authentication and management
+ */
+
+/**
+ * @swagger
+ * /api/user/login:
+ *   post:
+ *     tags:
+ *       - User
+ *     summary: Login user
+ *     description: User login with email and password to receive JWT token.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "user@example.com"
+ *               password:
+ *                 type: string
+ *                 example: "password123"
+ *     responses:
+ *       200:
+ *         description: Login successful, returns JWT token.
+ *       404:
+ *         description: Email not found.
+ *       401:
+ *         description: Invalid password.
+ *       500:
+ *         description: Internal server error.
+ */
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -49,6 +87,24 @@ exports.login = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /api/user:
+ *   get:
+ *     tags:
+ *       - User
+ *     summary: Get all users
+ *     description: Get a list of all users (requires admin role).
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of users.
+ *       403:
+ *         description: Access forbidden: insufficient role.
+ *       500:
+ *         description: Internal server error.
+ */
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.findAll({
@@ -65,6 +121,47 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /api/user/register:
+ *   post:
+ *     tags:
+ *       - User
+ *     summary: Register new user
+ *     description: Create a new user account.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               fullname:
+ *                 type: string
+ *                 example: "John Doe"
+ *               email:
+ *                 type: string
+ *                 example: "user@example.com"
+ *               password:
+ *                 type: string
+ *                 example: "password123"
+ *               phoneNumber:
+ *                 type: string
+ *                 example: "+123456789"
+ *               address:
+ *                 type: string
+ *                 example: "123 Main St, City"
+ *               roleId:
+ *                 type: integer
+ *                 example: 1
+ *     responses:
+ *       201:
+ *         description: User successfully registered.
+ *       400:
+ *         description: Email already registered or role not found.
+ *       500:
+ *         description: Internal server error.
+ */
 exports.register = async (req, res) => {
   const { fullname, email, password, phoneNumber, address, roleId } = req.body;
 
