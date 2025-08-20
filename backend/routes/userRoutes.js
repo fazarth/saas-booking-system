@@ -88,10 +88,15 @@ router.post("/register", userController.register);
  *       200:
  *         description: A list of users.
  *       403:
- *         description: Access forbidden: insufficient role.
+ *         description: "Access forbidden: insufficient role."
  *       500:
  *         description: Internal server error.
  */
-router.get("/", verifyToken, authorizeRole("admin"), userController.getAllUsers);
+router.get(
+  "/",
+  verifyToken,
+  authorizeRole("admin"),
+  userController.getAllUsers
+);
 
 module.exports = router;

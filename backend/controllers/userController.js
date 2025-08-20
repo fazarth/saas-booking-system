@@ -101,7 +101,7 @@ exports.login = async (req, res) => {
  *       200:
  *         description: A list of users.
  *       403:
- *         description: Access forbidden: insufficient role.
+ *         description: "Access forbidden: insufficient role."
  *       500:
  *         description: Internal server error.
  */
