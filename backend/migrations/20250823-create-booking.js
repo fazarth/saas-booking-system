@@ -1,5 +1,7 @@
+"use strict";
+
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  async up(queryInterface, Sequelize) {
     await queryInterface.createTable("Bookings", {
       UniqueID: {
         type: Sequelize.INTEGER,
@@ -8,17 +10,23 @@ module.exports = {
       },
       UserId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: "Users",
           key: "UniqueID",
         },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
-      RoomId: {
+      ResourceId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
-          model: "Rooms",
+          model: "Resources",
           key: "UniqueID",
         },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
       StartTime: {
         type: Sequelize.DATE,
@@ -29,21 +37,27 @@ module.exports = {
         allowNull: false,
       },
       Status: {
-        type: Sequelize.ENUM("pending", "confirmed", "canceled"),
-        defaultValue: "pending",
+        type: Sequelize.ENUM("Pending", "Confirmed", "Cancelled"),
+        defaultValue: "Pending",
+      },
+      BookingCode: {
+        type: Sequelize.STRING(50),
+        unique: true,
       },
       createdAt: {
-        type: Sequelize.DATE,
         allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.fn("NOW"),
       },
       updatedAt: {
-        type: Sequelize.DATE,
         allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.fn("NOW"),
       },
     });
   },
 
-  down: async (queryInterface, Sequelize) => {
+  async down(queryInterface, Sequelize) {
     await queryInterface.dropTable("Bookings");
   },
 };

@@ -11,9 +11,9 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(cors());
 app.use(express.json());
 
-// Ubah route prefix menjadi /api/user
-const userRoutes = require("./routes/userRoutes");
-app.use("/api/user", userRoutes);  // Ubah dari /api/users menjadi /api/user
+app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/resources", require("./routes/resourceRoutes"));
+app.use("/api/bookings", require("./routes/bookingRoutes"));
 
 const db = require("./models");
 

@@ -28,13 +28,13 @@ const User = sequelize.define(
     RoleId: {
       type: DataTypes.INTEGER,
       references: {
-        model: "Role",
+        model: "role",
         key: "UniqueID",
       },
     },
   },
   {
-    tableName: "User",
+    tableName: "user",
     timestamps: false,
   }
 );
