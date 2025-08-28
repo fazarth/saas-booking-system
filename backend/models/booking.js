@@ -43,6 +43,9 @@ const Booking = sequelize.define(
 Booking.associate = (models) => {
   Booking.belongsTo(models.Resource, { foreignKey: "ResourceId" });
   Booking.belongsTo(models.User, { foreignKey: "UserId" });
+  Booking.hasOne(models.RoomBookingDetail, { foreignKey: "BookingId" });
+  Booking.hasOne(models.QueueTickets, { foreignKey: "BookingId" });
+  Booking.hasOne(models.Checkin, { foreignKey: "BookingId" });
 };
 
 module.exports = Booking;

@@ -1,30 +1,24 @@
 "use strict";
-
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Bookings", {
+    await queryInterface.createTable("booking", {
       UniqueID: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
+        allowNull: false,
       },
       UserId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: {
-          model: "Users",
-          key: "UniqueID",
-        },
+        references: { model: "user", key: "UniqueID" },
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       },
       ResourceId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: {
-          model: "Resources",
-          key: "UniqueID",
-        },
+        references: { model: "resource", key: "UniqueID" },
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       },
@@ -47,17 +41,16 @@ module.exports = {
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.fn("NOW"),
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.fn("NOW"),
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
     });
   },
-
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Bookings");
+    await queryInterface.dropTable("booking");
   },
 };

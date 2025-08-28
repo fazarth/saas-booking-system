@@ -1,20 +1,25 @@
 const jwt = require("jsonwebtoken");
+const db = require("../models");
 
-exports.auth = (req, res, next) => {
-  const h = req.headers.authorization || "";
-  const token = h.startsWith("Bearer ") ? h.slice(7) : null;
-  if (!token) return res.status(401).json({ error: "No token" });
+const auth = async (req, res, next) => {
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET || "secret_key@123");
-    req.user = payload; // { id, role }
+    const token = req.header("Authorization")?.replace("Bearer ", "");
+    if (!token) throw new Error();
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await db.User.findByPk(decoded.id, {
+      include: [{ model: db.Role, attributes: ["Name"] }]
+    });
+
+    if (!user) throw new Error();
+
+    req.token = token;
+    req.user = user;
+    req.user.role = user.Role.Name;
     next();
-  } catch (e) {
-    return res.status(401).json({ error: "Invalid token" });
+  } catch (error) {
+    res.status(401).json({ error: "Please authenticate" });
   }
 };
 
-exports.only = (...roles) => (req, res, next) => {
-  if (!req.user) return res.status(401).json({ error: "Unauthorized" });
-  if (!roles.includes(req.user.role)) return res.status(403).json({ error: "Forbidden" });
-  next();
-};
+module.exports = auth;

@@ -1,9 +1,19 @@
 const express = require("express");
-const r = express.Router();
-const { auth, only } = require("../middleware/auth");
-const c = require("../controllers/resourceController");
+const router = express.Router();
+const resourceController = require("../controllers/resourceController");
+const { rbac, permissions } = require("../middleware/rbac");
+const auth = require("../middleware/auth");
 
-r.post("/", auth, only("Owner","Admin"), c.createResource);
-r.get("/", c.listResources);
+// Apply auth middleware to all routes
+router.use(auth);
 
-module.exports = r;
+// Public endpoints
+router.get("/available", resourceController.getAvailableResources);
+
+// Protected endpoints
+router.get("/", rbac(permissions.VIEW_AVAILABLE_RESOURCES), resourceController.getAll);
+router.post("/", rbac(permissions.MANAGE_OWN_RESOURCES), resourceController.create);
+router.put("/:ResourceId", rbac(permissions.MANAGE_OWN_RESOURCES), resourceController.update);
+router.delete("/:ResourceId", rbac(permissions.MANAGE_OWN_RESOURCES), resourceController.delete);
+
+module.exports = router;

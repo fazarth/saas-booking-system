@@ -14,6 +14,10 @@ app.use(express.json());
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/resources", require("./routes/resourceRoutes"));
 app.use("/api/bookings", require("./routes/bookingRoutes"));
+app.use("/api/room-booking-details", require("./routes/roomBookingDetailRoutes"));
+app.use("/api/health-booking-details", require("./routes/healthBookingDetailRoutes"));
+app.use("/api/queue-tickets", require("./routes/queueTicketsRoutes"));
+app.use("/api/users", require("./routes/userRoutes"));
 
 const db = require("./models");
 
@@ -33,3 +37,9 @@ db.sequelize
   .catch((error) => {
     console.error("Database Error:", error);
   });
+
+// Endpoint utama backend:
+// - /api/auth         // Autentikasi & user (login, register, dsb)
+// - /api/resources    // Manajemen resource (ruangan, fasilitas, dsb)
+// - /api/bookings     // Manajemen booking (buat, lihat, update, hapus booking)
+// - /api-docs         // Dokumentasi API (Swagger UI)

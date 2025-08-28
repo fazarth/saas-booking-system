@@ -1,12 +1,6 @@
-const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const db = require("../config/db"); // sequelize instance (koneksi), gunakan db.query
-
-// helper
-const sign = (payload) =>
-  jwt.sign(payload, process.env.JWT_SECRET || "secret_key@123", {
-    expiresIn: "1d",
-  });
+const bcrypt = require("bcrypt");
+const db = require("../models");
 
 exports.registerOwner = async (req, res) => {
   const t = await db.transaction();
@@ -133,19 +127,30 @@ exports.registerUser = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const [rows] = await db.query(
-      "SELECT u.*, r.Name as RoleName FROM `User` u LEFT JOIN role r ON r.UniqueID=u.RoleId WHERE u.Email=? LIMIT 1",
-      { replacements: [email] }
+    const user = await db.User.findOne({
+      where: { Email: email },
+      include: [{ model: db.Role, attributes: ["Name"] }],
+    });
+
+    if (!user || !(await bcrypt.compare(password, user.Password))) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    const token = jwt.sign(
+      { id: user.UniqueID, role: user.Role.Name },
+      process.env.JWT_SECRET,
+      { expiresIn: "24h" }
     );
-    const user = rows[0];
-    if (!user) return res.status(404).json({ error: "User not found" });
 
-    const ok = await bcrypt.compare(password, user.Password);
-    if (!ok) return res.status(400).json({ error: "Invalid credentials" });
-
-    const token = sign({ id: user.UniqueID, role: user.RoleName });
-    res.json({ token, role: user.RoleName, userId: user.UniqueID });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
+    res.json({
+      token,
+      user: {
+        id: user.UniqueID,
+        email: user.Email,
+        role: user.Role.Name,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };

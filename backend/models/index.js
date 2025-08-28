@@ -1,18 +1,29 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../config/db");
 
-// Import model
-const User = require("./user");
-const Role = require("./role");
+const db = {};
 
-// Definisikan relasi antar model
-Role.hasMany(User, { foreignKey: "RoleId" });
-User.belongsTo(Role, { foreignKey: "RoleId" });
+db.Sequelize = Sequelize;
+db.sequelize = sequelize;
 
-// Export semua dalam satu objek
-module.exports = {
-  Sequelize,
-  sequelize,
-  User,
-  Role,
-};
+// Import semua model
+db.User = require("./user");
+db.Role = require("./role");
+db.Resource = require("./resource");
+db.Booking = require("./booking");
+db.RoomDetail = require("./roomDetail");
+db.HealthDetail = require("./healthDetail");
+db.HealthBookingDetail = require("./healthbookingdetail");
+db.RoomBookingDetail = require("./roombookingdetail");
+db.QueueTickets = require("./queuetickets");
+db.Checkin = require("./checkin");
+db.AvailabilitySlots = require("./availabilityslots");
+
+// Inisialisasi relasi jika ada fungsi associate
+Object.keys(db).forEach((modelName) => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
+
+module.exports = db;

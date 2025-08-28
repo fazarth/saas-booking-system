@@ -1,27 +1,24 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
 
-const HealthDetail = sequelize.define(
-  "HealthDetail",
+const Checkin = sequelize.define(
+  "Checkin",
   {
     UniqueID: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    ResourceId: {
+    BookingId: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    Specialization: DataTypes.STRING,
-    ClinicAddress: DataTypes.STRING,
-    Fee: DataTypes.DECIMAL(10, 2),
-    DurationMin: DataTypes.INTEGER,
+    Method: DataTypes.STRING,
   },
   {
-    tableName: "healthdetail",
+    tableName: "checkin",
     timestamps: false,
   }
 );
 
-module.exports = HealthDetail;
+module.exports = Checkin;

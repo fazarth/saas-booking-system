@@ -1,4 +1,5 @@
-const db = require("../config/db");
+const db = require("../models");
+const Booking = db.Booking;
 
 // helper overlap
 const overlapSQL = `
@@ -49,5 +50,55 @@ exports.updateStatus = async (req, res) => {
     res.json({ message: "Booking status updated" });
   } catch (e) {
     res.status(500).json({ error: e.message });
+  }
+};
+
+exports.getAll = async (req, res) => {
+  try {
+    const data = await Booking.findAll();
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getById = async (req, res) => {
+  try {
+    const data = await Booking.findByPk(req.params.id);
+    if (!data) return res.status(404).json({ error: "Not found" });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.create = async (req, res) => {
+  try {
+    const data = await Booking.create(req.body);
+    res.status(201).json(data);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+exports.update = async (req, res) => {
+  try {
+    const data = await Booking.findByPk(req.params.id);
+    if (!data) return res.status(404).json({ error: "Not found" });
+    await data.update(req.body);
+    res.json(data);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+exports.delete = async (req, res) => {
+  try {
+    const data = await Booking.findByPk(req.params.id);
+    if (!data) return res.status(404).json({ error: "Not found" });
+    await data.destroy();
+    res.json({ message: "Deleted" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };

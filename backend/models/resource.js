@@ -2,38 +2,31 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
 
 const Resource = sequelize.define(
-  "resource",
+  "Resource",
   {
     UniqueID: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    Name: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
-    ResourceType: {
-      type: DataTypes.ENUM("room", "health"),
-      allowNull: false,
-    },
-    Description: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    IsActive: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-    },
+    Name: DataTypes.STRING,
+    BookingType: DataTypes.STRING,
+    ResourceType: DataTypes.STRING,
+    Description: DataTypes.STRING,
+    IsActive: DataTypes.BOOLEAN,
   },
   {
     tableName: "resource",
-    timestamps: false,
+    timestamps: true,
   }
 );
 
+// Relasi
 Resource.associate = (models) => {
   Resource.hasMany(models.Booking, { foreignKey: "ResourceId" });
+  Resource.hasOne(models.RoomDetail, { foreignKey: "ResourceId" });
+  Resource.hasOne(models.HealthDetail, { foreignKey: "ResourceId" });
+  Resource.hasMany(models.AvailabilitySlots, { foreignKey: "ResourceId" });
 };
 
 module.exports = Resource;
