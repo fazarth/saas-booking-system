@@ -108,6 +108,28 @@ const resourceController = {
       res.status(500).json({ error: error.message });
     }
   },
+
+  deleteResource: async (req, res) => {
+  const { ResourceId } = req.params;
+
+  try {
+    const resource = await db.Resource.findByPk(ResourceId);
+    if (!resource) {
+      return res.status(404).json({ error: "Resource not found" });
+    }
+
+    // kalau role owner, pastikan hanya boleh hapus resource miliknya
+    if (req.user.role === "owner" && resource.OwnerId !== req.user.id) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    await resource.destroy();
+    res.json({ message: "Resource deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+},
+
 };
 
 module.exports = resourceController;
