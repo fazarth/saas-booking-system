@@ -1,22 +1,25 @@
 const jwt = require("jsonwebtoken");
+const db = require("../models");
 
-const verifyToken = (req, res, next) => {
-  const authHeader = req.headers["authorization"];
+const auth = async (req, res, next) => {
+  try {
+    const token = req.header("Authorization")?.replace("Bearer ", "");
+    if (!token) throw new Error();
 
-  const token = authHeader && authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await db.User.findByPk(decoded.id, {
+      include: [{ model: db.Role, attributes: ["Name"] }]
+    });
 
-  if (!token) {
-    return res.status(401).json({ message: "Token tidak ditemukan" });
-  }
+    if (!user) throw new Error();
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) {
-      return res.status(403).json({ message: "Token tidak valid" });
-    }
-
+    req.token = token;
     req.user = user;
+    req.user.role = user.Role.Name;
     next();
-  });
+  } catch (error) {
+    res.status(401).json({ error: "Please authenticate" });
+  }
 };
 
-module.exports = verifyToken;
+module.exports = auth;

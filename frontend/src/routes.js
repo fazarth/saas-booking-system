@@ -3,6 +3,7 @@ import React from "react";
 // Admin Imports
 import MainDashboard from "views/admin/default";
 import NFTMarketplace from "views/admin/marketplace";
+import Booking from "views/admin/booking";
 import Profile from "views/admin/profile";
 import DataTables from "views/admin/tables";
 
@@ -32,6 +33,14 @@ const routes = [
     path: "nft-marketplace",
     icon: <MdOutlineShoppingCart className="h-6 w-6" />,
     component: <NFTMarketplace />,
+    secondary: true,
+  },
+  {
+    name: "Booking List",
+    layout: "/admin",
+    path: "booking-list",
+    icon: <MdOutlineShoppingCart className="h-6 w-6" />,
+    component: <Booking />,
     secondary: true,
   },
   {

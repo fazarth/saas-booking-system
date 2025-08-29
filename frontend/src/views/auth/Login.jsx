@@ -17,21 +17,20 @@ export default function Login() {
     }
 
     try {
-      console.log("Sending login request to:", "/users/login", {
+      console.log("Sending login request to:", "/auth/login", {
         email,
         password,
       });
-      const res = await axios.post("/users/login", { email, password });
-      const { token, user } = res.data;
-      console.log("Sending login request to:", "/users/login", {
+      const res = await axios.post("/auth/login", { email, password });
+      const { token, user, role } = res.data;
+      console.log("Sending login request to:", "/auth/login", {
         email,
         password,
       });
-
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      if (user.roleId === 1) {
+      if (role === "Admin") {
         navigate("/admin/default");
       } else {
         navigate("/dashboard");

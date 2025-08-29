@@ -2,7 +2,7 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
 
 const Role = sequelize.define(
-  "role",
+  "Role",
   {
     UniqueID: {
       type: DataTypes.INTEGER,
@@ -10,7 +10,7 @@ const Role = sequelize.define(
       autoIncrement: true,
     },
     Name: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING,
       allowNull: false,
     },
   },
@@ -20,6 +20,7 @@ const Role = sequelize.define(
   }
 );
 
+// Relasi
 Role.associate = (models) => {
   Role.hasMany(models.User, { foreignKey: "RoleId" });
 };

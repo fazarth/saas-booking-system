@@ -11,17 +11,11 @@ const Booking = sequelize.define(
     },
     UserId: {
       type: DataTypes.INTEGER,
-      references: {
-        model: "Users",
-        key: "UniqueID",
-      },
+      allowNull: false,
     },
-    RoomId: {
+    ResourceId: {
       type: DataTypes.INTEGER,
-      references: {
-        model: "Rooms",
-        key: "UniqueID",
-      },
+      allowNull: false,
     },
     StartTime: {
       type: DataTypes.DATE,
@@ -32,14 +26,26 @@ const Booking = sequelize.define(
       allowNull: false,
     },
     Status: {
-      type: DataTypes.ENUM("pending", "confirmed", "canceled"),
-      defaultValue: "pending",
+      type: DataTypes.ENUM("Pending", "Confirmed", "Cancelled"),
+      defaultValue: "Pending",
+    },
+    BookingCode: {
+      type: DataTypes.STRING(50),
+      unique: true,
     },
   },
   {
-    tableName: "Booking",
-    timestamps: false,
+    tableName: "booking",
+    timestamps: true,
   }
 );
+
+Booking.associate = (models) => {
+  Booking.belongsTo(models.Resource, { foreignKey: "ResourceId" });
+  Booking.belongsTo(models.User, { foreignKey: "UserId" });
+  Booking.hasOne(models.RoomBookingDetail, { foreignKey: "BookingId" });
+  Booking.hasOne(models.QueueTickets, { foreignKey: "BookingId" });
+  Booking.hasOne(models.Checkin, { foreignKey: "BookingId" });
+};
 
 module.exports = Booking;

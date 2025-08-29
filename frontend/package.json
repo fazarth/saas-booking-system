@@ -1,6 +1,6 @@
 {
-  "name": "horizon-ui-tailwind-react",
-  "version": "2.0.0",
+  "name": "booking-app",
+  "version": "0.0.1",
   "private": true,
   "dependencies": {
     "@chakra-ui/hooks": "^2.1.4",
