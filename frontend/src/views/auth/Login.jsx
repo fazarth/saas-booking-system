@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import InputField from "components/fields/InputField";
 import axios from "../../api/axios";
 import { useNavigate } from "react-router-dom";
@@ -8,10 +9,39 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [isPopUpVisible, setPopUpVisible] = useState(false);
   const [popType, setPopType] = useState("");
   const [popupMessage, setPopUpMessage] = useState("");
+
+  const routes = [
+    {
+      name: "Admin Login",
+      layout: "/auth",
+      path: "admin/login",
+      component: <Login />,
+    },
+    {
+      name: "Owner Login",
+      layout: "/auth",
+      path: "owner/login",
+      component: <Login />,
+    },
+    {
+      name: "Customer Login",
+      layout: "/auth",
+      path: "user/login",
+      component: <Login />,
+    },
+  ];
+
+  const getRouteName = () => {
+    const currentRoute = routes.find((route) =>
+      location.pathname.includes(route.path)
+    );
+    return currentRoute ? currentRoute.name : "Login";
+  };
 
   const ShowError = (message) => {
     setPopType("error");
@@ -54,7 +84,7 @@ export default function Login() {
     <div className="mb-16 mt-16 flex h-full w-full items-start justify-start px-4 md:px-16 lg:px-16">
       <div className="mt-[10vh] w-full max-w-[420px] flex-col items-start">
         <h4 className="mb-2.5 text-4xl font-bold text-navy-700 dark:text-white">
-          Login
+          {getRouteName()}
         </h4>
         <p className="mb-9 ml-1 text-base text-gray-600">
           Enter your email and password to login

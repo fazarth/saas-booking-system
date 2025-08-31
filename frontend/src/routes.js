@@ -58,11 +58,26 @@ const routes = [
     component: <Profile />,
   },
   {
-    name: "Login",
+    name: "Admin Login",
     layout: "/auth",
-    path: "login",
+    path: "admin/login",
+    icon: <MdLock className="h-6 w-6" />,
+    component: <Login />,
+  },
+  {
+    name: "Owner Login",
+    layout: "/auth",
+    path: "owner/login",
+    icon: <MdLock className="h-6 w-6" />,
+    component: <Login />,
+  },
+  {
+    name: "Customer Login",
+    layout: "/auth",
+    path: "/user/login",
     icon: <MdLock className="h-6 w-6" />,
     component: <Login />,
   },
 ];
+
 export default routes;
