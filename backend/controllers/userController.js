@@ -2,14 +2,14 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const db = require("../models");
 
+// ======================== REGISTER OWNER ========================
 exports.registerOwner = async (req, res) => {
-  const t = await db.transaction();
+  const t = await db.sequelize.transaction();
   try {
-    const { fullname, email, password, phoneNumber, address, resource } =
-      req.body;
+    const { fullname, email, password, phoneNumber, address, resource } = req.body;
 
     // cari role Owner
-    const [role] = await db.query(
+    const [role] = await db.sequelize.query(
       "SELECT UniqueID FROM role WHERE Name='Owner' LIMIT 1",
       { transaction: t }
     );
@@ -19,56 +19,46 @@ exports.registerOwner = async (req, res) => {
     // hash password
     const hash = await bcrypt.hash(password, 10);
 
-    // insert user (owner)
-    const [ownerId] = await db.query(
+    // insert user
+    const [userResult] = await db.sequelize.query(
       "INSERT INTO `User` (Fullname,Email,PhoneNumber,Address,Password,RoleId) VALUES (?,?,?,?,?,?)",
       {
         transaction: t,
-        replacements: [
-          fullname,
-          email,
-          phoneNumber || null,
-          address || null,
-          hash,
-          RoleId,
-        ],
+        replacements: [fullname, email, phoneNumber || null, address || null, hash, RoleId],
       }
     );
-    // const ownerId = userMeta.insertId;
+    const ownerId = userResult; // biasanya MySQL return insertId
 
     // insert resource
     const { name, type, description, detail } = resource;
-    console.log("insert ke resource");
-    console.log(ownerId);
-    const [resourceId] = await db.query(
+    const [resResult] = await db.sequelize.query(
       "INSERT INTO resource (Name,ResourceType,Description,OwnerId,IsActive) VALUES (?,?,?,?,?)",
       {
         transaction: t,
         replacements: [name, type, description || null, ownerId, 1],
       }
     );
-    // const resourceId = resMeta.insertId;
+    const resourceId = resResult;
 
-    // insert detail berdasarkan type
+    // insert detail sesuai type
     if (type === "room") {
-      console.log("insert ke roomDetail"),
-        await db.query(
-          "INSERT INTO roomDetail (ResourceId,RoomNumber,Capacity,Price,Floor,Facilities,Description) VALUES (?,?,?,?,?,?,?)",
-          {
-            transaction: t,
-            replacements: [
-              resourceId,
-              detail?.roomNumber || null,
-              detail?.capacity || null,
-              detail?.price || null,
-              detail?.floor || null,
-              detail?.facilities || null,
-              detail?.description || null,
-            ],
-          }
-        );
+      await db.sequelize.query(
+        "INSERT INTO roomDetail (ResourceId,RoomNumber,Capacity,Price,Floor,Facilities,Description) VALUES (?,?,?,?,?,?,?)",
+        {
+          transaction: t,
+          replacements: [
+            resourceId,
+            detail?.roomNumber || null,
+            detail?.capacity || null,
+            detail?.price || null,
+            detail?.floor || null,
+            detail?.facilities || null,
+            detail?.description || null,
+          ],
+        }
+      );
     } else if (type === "health") {
-      await db.query(
+      await db.sequelize.query(
         "INSERT INTO healthDetail (ResourceId,DoctorName,Specialization,ClinicAddress,Fee,DurationMin,Description) VALUES (?,?,?,?,?,?,?)",
         {
           transaction: t,
@@ -93,37 +83,33 @@ exports.registerOwner = async (req, res) => {
   }
 };
 
+// ======================== REGISTER CUSTOMER ========================
 exports.registerUser = async (req, res) => {
   try {
     const { fullname, email, password, phoneNumber, address } = req.body;
-    const [role] = await db.query(
+
+    // role Customer
+    const [role] = await db.sequelize.query(
       "SELECT UniqueID FROM role WHERE Name='Customer' LIMIT 1"
     );
     const RoleId = role[0]?.UniqueID;
     if (!RoleId) throw new Error("Role Customer not found");
 
     const hash = await bcrypt.hash(password, 10);
-    const [r] = await db.query(
+
+    const [result] = await db.sequelize.query(
       "INSERT INTO `User` (Fullname,Email,PhoneNumber,Address,Password,RoleId) VALUES (?,?,?,?,?,?)",
       {
-        replacements: [
-          fullname,
-          email,
-          phoneNumber || null,
-          address || null,
-          hash,
-          RoleId,
-        ],
+        replacements: [fullname, email, phoneNumber || null, address || null, hash, RoleId],
       }
     );
-    res
-      .status(201)
-      .json({ message: "Customer registered", userId: r.insertId });
+    res.status(201).json({ message: "Customer registered", userId: result });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
 };
 
+// ======================== LOGIN ========================
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -144,13 +130,51 @@ exports.login = async (req, res) => {
 
     res.json({
       token,
-      user: {
-        id: user.UniqueID,
-        email: user.Email,
-        role: user.Role.Name,
-      },
+      user: { id: user.UniqueID, email: user.Email, role: user.Role.Name },
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+// ======================== CRUD USER ========================
+exports.getAll = async (req, res) => {
+  try {
+    const users = await db.User.findAll();
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getById = async (req, res) => {
+  try {
+    const user = await db.User.findByPk(req.params.id);
+    if (!user) return res.status(404).json({ error: "Not found" });
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.update = async (req, res) => {
+  try {
+    const user = await db.User.findByPk(req.params.id);
+    if (!user) return res.status(404).json({ error: "Not found" });
+    await user.update(req.body);
+    res.json(user);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+exports.delete = async (req, res) => {
+  try {
+    const user = await db.User.findByPk(req.params.id);
+    if (!user) return res.status(404).json({ error: "Not found" });
+    await user.destroy();
+    res.json({ message: "Deleted" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
