@@ -1,6 +1,28 @@
+import React, { useState } from "react";
 import nft1 from "assets/img/nfts/NftBanner1.png";
+import PopUpNotification from "components/popup/PopUpNotification";
 
 const Banner1 = () => {
+  const [isPopupVisible, setPopupVisible] = useState(false);
+  const [popupType, setPopupType] = useState("");
+  const [popupMessage, setPopupMessage] = useState("");
+
+  const showError = () => {
+    setPopupType("error");
+    setPopupMessage("An error occurred! Please try again.");
+    setPopupVisible(true);
+  };
+
+  const showSuccess = () => {
+    setPopupType("success");
+    setPopupMessage("Success! You have discovered the latest NFTs.");
+    setPopupVisible(true);
+  };
+
+  const closePopup = () => {
+    setPopupVisible(false);
+  };
+
   return (
     <div
       className="flex w-full flex-col rounded-[20px] bg-cover px-[30px] py-[30px] md:px-[64px] md:py-[56px]"
@@ -16,17 +38,29 @@ const Banner1 = () => {
         </p>
 
         <div className="mt-[36px] flex items-center justify-between gap-4 sm:justify-start 2xl:gap-10">
-          <button className="text-black linear rounded-xl bg-white px-4 py-2 text-center text-base font-medium transition duration-200 hover:!bg-white/80 active:!bg-white/70">
+          <button
+            className="text-black linear rounded-xl bg-white px-4 py-2 text-center text-base font-medium transition duration-200 hover:!bg-white/80 active:!bg-white/70"
+            onClick={showSuccess}
+          >
             Discover now
           </button>
           <button
-            href=" "
             className="text-base font-medium text-lightPrimary hover:text-lightPrimary 2xl:ml-2"
+            onClick={showError}
           >
             Watch Video
           </button>
         </div>
       </div>
+
+      {/* Menampilkan PopUpNotification jika state isPopupVisible true */}
+      {isPopupVisible && (
+        <PopUpNotification
+          type={popupType} // "error" atau "success"
+          message={popupMessage} // Pesan untuk ditampilkan di modal
+          onClose={closePopup} // Menutup pop-up
+        />
+      )}
     </div>
   );
 };

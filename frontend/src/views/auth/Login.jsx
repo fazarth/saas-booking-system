@@ -2,42 +2,51 @@ import { useState } from "react";
 import InputField from "components/fields/InputField";
 import axios from "../../api/axios";
 import { useNavigate } from "react-router-dom";
+import PopUpNotification from "components/popup/PopUpNotification";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  const [isPopUpVisible, setPopUpVisible] = useState(false);
+  const [popType, setPopType] = useState("");
+  const [popupMessage, setPopUpMessage] = useState("");
+
+  const ShowError = (message) => {
+    setPopType("error");
+    setPopUpMessage(message);
+    setPopUpVisible(true);
+  };
+
+  const closePopUp = () => {
+    setPopUpVisible(false);
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
     if (!email || !password) {
-      alert("Email dan password wajib diisi");
+      ShowError("Email dan Password wajib diisi!");
       return;
     }
 
     try {
-      console.log("Sending login request to:", "/auth/login", {
-        email,
-        password,
-      });
-      const res = await axios.post("/auth/login", { email, password });
-      const { token, user, role } = res.data;
-      console.log("Sending login request to:", "/auth/login", {
-        email,
-        password,
-      });
+      const res = await axios.post("/users/login", { email, password });
+      const { token, user } = res.data;
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      if (role === "Admin") {
+      if (user.role === "Admin") {
         navigate("/admin/default");
       } else {
         navigate("/dashboard");
       }
     } catch (err) {
       console.error("Login failed:", err);
-      alert(err.response?.data?.message || "Login gagal");
+      ShowError(
+        "Gagal Login! Silakan periksa kembali email dan password Anda."
+      );
     }
   };
 
@@ -94,6 +103,14 @@ export default function Login() {
           </a>
         </div>
       </div>
+
+      {isPopUpVisible && (
+        <PopUpNotification
+          type={popType}
+          message={popupMessage}
+          onClose={closePopUp}
+        />
+      )}
     </div>
   );
 }
