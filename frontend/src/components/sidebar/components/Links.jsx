@@ -17,7 +17,7 @@ export function SidebarLinks(props) {
 
   const createLinks = (routes) => {
     return routes.map((route, index) => {
-      if (route.layout === "/admin" || route.layout === "/auth") {
+      if (route.layout === "/admin") {
         return (
           <Link key={index} to={route.layout + "/" + route.path}>
             <div className="relative mb-3 flex hover:cursor-pointer">
@@ -32,7 +32,7 @@ export function SidebarLinks(props) {
                       : "font-medium text-gray-600"
                   }`}
                 >
-                  {route.icon ? route.icon : <DashIcon />}{" "}
+                  {route.icon ? route.icon : ""}{" "}
                 </span>
                 <p
                   className={`leading-1 ml-4 flex ${
@@ -41,7 +41,7 @@ export function SidebarLinks(props) {
                       : "font-medium text-gray-600"
                   }`}
                 >
-                  {route.name}
+                  {route.name ? route.name : ""}
                 </p>
               </li>
               {activeRoute(route.path) ? (
