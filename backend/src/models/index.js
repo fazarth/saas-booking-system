@@ -9,6 +9,8 @@ const RoomDetail = require('./RoomDetail');
 const HealthDetail = require('./HealthDetail');
 const VehicleDetail = require('./VehicleDetail');
 const CourseDetail = require('./CourseDetail');
+const Booking = require('./Booking');
+const AvailabilitySlot = require('./AvailabilitySlot');
 
 // Associations
 User.belongsToMany(Role, { through: UserRole, foreignKey: 'userId' });
@@ -29,6 +31,8 @@ module.exports = {
   HealthDetail,
   VehicleDetail,
   CourseDetail,
+  Booking,
+  AvailabilitySlot
 };
 
 // Sync function for migrations
