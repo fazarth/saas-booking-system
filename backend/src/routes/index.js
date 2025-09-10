@@ -11,6 +11,7 @@ const isAdmin = require('../middlewares/isAdmin');
 const resourceRoutes = require('./resource');
 const resourceDetailRoutes = require('./resourceDetail');
 const bookingRoutes = require('./booking');
+const availabilityRoutes = require('./availability');
 
 // Auth
 router.post('/login', authController.login);
@@ -38,5 +39,6 @@ router.get('/protected', auth, rbac('view_protected'), (req, res) => {
 router.use('/resources', resourceRoutes);
 router.use('/resources', resourceDetailRoutes);
 router.use('/bookings', bookingRoutes);
+router.use('/availability', availabilityRoutes);
 
 module.exports = router;
