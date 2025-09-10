@@ -2,11 +2,12 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import InputField from "components/fields/InputField";
 import axios from "../../api/axios";
+import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import PopUpNotification from "components/popup/PopUpNotification";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
@@ -56,18 +57,20 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
-      ShowError("Email dan Password wajib diisi!");
+    if (!username || !password) {
+      ShowError("Username dan Password wajib diisi!");
       return;
     }
 
     try {
-      const res = await axios.post("/users/login", { email, password });
-      const { token, user } = res.data;
+      const res = await axios.post("/login", { username, password });
+      // const { token, user } = res.data;
+      const { token } = res.data;
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
 
-      if (user.role === "Admin") {
+      const decoded = jwtDecode(token);
+
+      if (decoded.role === "admin") {
         navigate("/admin/default");
       } else {
         navigate("/dashboard");
@@ -75,7 +78,7 @@ export default function Login() {
     } catch (err) {
       console.error("Login failed:", err);
       ShowError(
-        "Gagal Login! Silakan periksa kembali email dan password Anda."
+        "Gagal Login! Silakan periksa kembali username dan password Anda."
       );
     }
   };
@@ -87,25 +90,25 @@ export default function Login() {
           {getRouteName()}
         </h4>
         <p className="mb-9 ml-1 text-base text-gray-600">
-          Enter your email and password to login
+          Enter your username and password to login
         </p>
 
         <form onSubmit={handleLogin}>
           <InputField
             variant="auth"
             extra="mb-3"
-            label="Email*"
-            placeholder="mail@example.com"
-            id="email"
+            label="Username"
+            // placeholder="mail@example.com"
+            id="username"
             type="text"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
 
           <InputField
             variant="auth"
             extra="mb-3"
-            label="Password*"
+            label="Password"
             placeholder="Min. 8 characters"
             id="password"
             type="password"
