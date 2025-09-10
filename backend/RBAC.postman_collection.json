@@ -1,0 +1,89 @@
+{
+  "info": {
+    "name": "RBAC API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register User",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {"mode": "raw", "raw": "{\n  \"username\": \"admin\",\n  \"email\": \"admin@mail.com\",\n  \"password\": \"admin123\"\n}"},
+        "url": {"raw": "{{base_url}}/api/register", "host": ["{{base_url}}"], "path": ["api", "register"]}
+      }
+    },
+    {
+      "name": "Login User",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {"mode": "raw", "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"},
+        "url": {"raw": "{{base_url}}/api/login", "host": ["{{base_url}}"], "path": ["api", "login"]}
+      }
+    },
+    {
+      "name": "Create Role",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+        "body": {"mode": "raw", "raw": "{\n  \"name\": \"admin\",\n  \"description\": \"Administrator role\"\n}"},
+        "url": {"raw": "{{base_url}}/api/roles", "host": ["{{base_url}}"], "path": ["api", "roles"]}
+      }
+    },
+    {
+      "name": "Create Permission",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+        "body": {"mode": "raw", "raw": "{\n  \"name\": \"view_protected\",\n  \"description\": \"Access protected route\"\n}"},
+        "url": {"raw": "{{base_url}}/api/permissions", "host": ["{{base_url}}"], "path": ["api", "permissions"]}
+      }
+    },
+    {
+      "name": "Assign Permission to Role",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+        "body": {"mode": "raw", "raw": "{\n  \"roleId\": 1,\n  \"permissionId\": 1\n}"},
+        "url": {"raw": "{{base_url}}/api/roles/assign-permission", "host": ["{{base_url}}"], "path": ["api", "roles", "assign-permission"]}
+      }
+    },
+    {
+      "name": "Assign Role to User",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}],
+        "body": {"mode": "raw", "raw": "{\n  \"userId\": 1,\n  \"roleId\": 1\n}"},
+        "url": {"raw": "{{base_url}}/api/users/assign-role", "host": ["{{base_url}}"], "path": ["api", "users", "assign-role"]}
+      }
+    },
+    {
+      "name": "Access Protected Route",
+      "request": {
+        "method": "GET",
+        "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+        "url": {"raw": "{{base_url}}/api/protected", "host": ["{{base_url}}"], "path": ["api", "protected"]}
+      }
+    },
+    {
+      "name": "Create Resource (Owner Only)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"},
+          {"key": "Authorization", "value": "Bearer {{token}}"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"bookingType\": \"meeting\",\n  \"resourceType\": \"room\",\n  \"description\": \"Meeting room for team\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/resources",
+          "host": ["{{base_url}}"],
+          "path": ["api", "resources"]
+        }
+      }
+    }
+  ]
+}
