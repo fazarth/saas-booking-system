@@ -71,7 +71,7 @@ export default function Login() {
       const decoded = jwtDecode(token);
 
       if (decoded.role === "admin") {
-        navigate("/admin/default");
+        navigate("/admin/dashboard");
       } else {
         navigate("/dashboard");
       }

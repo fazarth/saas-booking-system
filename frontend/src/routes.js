@@ -1,7 +1,9 @@
 import React from "react";
 
 // Admin Imports
-import MainDashboard from "views/admin/default";
+import AdminDashboard from "views/admin/dashboard";
+import OwnerDashboard from "views/owner/dashboard";
+import CustomerDashboard from "views/customer/dashboard";
 import NFTMarketplace from "views/admin/marketplace";
 import Booking from "views/admin/booking";
 import Profile from "views/admin/profile";
@@ -21,11 +23,25 @@ import {
 
 const routes = [
   {
-    name: "Main Dashboard",
+    name: "Admin Dashboard",
     layout: "/admin",
-    path: "default",
+    path: "dashboard",
     icon: <MdHome className="h-6 w-6" />,
-    component: <MainDashboard />,
+    component: <AdminDashboard />,
+  },
+  {
+    name: "Owner Dashboard",
+    layout: "/owner",
+    path: "dashboard",
+    icon: <MdHome className="h-6 w-6" />,
+    component: <OwnerDashboard />,
+  },
+  {
+    name: "Customer Dashboard",
+    layout: "/customer",
+    path: "dashboard",
+    icon: <MdHome className="h-6 w-6" />,
+    component: <CustomerDashboard />,
   },
   {
     name: "NFT Marketplace",

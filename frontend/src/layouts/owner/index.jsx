@@ -5,11 +5,11 @@ import Sidebar from "components/sidebar";
 import Footer from "components/footer/Footer";
 import routes from "routes.js";
 
-export default function Admin(props) {
+export default function Owner(props) {
   const { ...rest } = props;
   const location = useLocation();
   const [open, setOpen] = React.useState(true);
-  const [currentRoute, setCurrentRoute] = React.useState("Admin Dashboard");
+  const [currentRoute, setCurrentRoute] = React.useState("Owner Dashboard");
 
   React.useEffect(() => {
     window.addEventListener("resize", () =>
@@ -21,7 +21,7 @@ export default function Admin(props) {
   }, [location.pathname]);
 
   const getActiveRoute = (routes) => {
-    let activeRoute = "Admin Dashboard";
+    let activeRoute = "Owner Dashboard";
     for (let i = 0; i < routes.length; i++) {
       if (
         window.location.href.indexOf(
@@ -46,7 +46,7 @@ export default function Admin(props) {
   };
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
-      if (prop.layout === "/admin") {
+      if (prop.layout === "/owner") {
         return (
           <Route path={`/${prop.path}`} element={prop.component} key={key} />
         );
@@ -81,7 +81,7 @@ export default function Admin(props) {
 
                 <Route
                   path="/"
-                  element={<Navigate to="/admin/dashboard" replace />}
+                  element={<Navigate to="/owner/dashboard" replace />}
                 />
               </Routes>
             </div>
