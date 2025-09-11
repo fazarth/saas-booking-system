@@ -64,22 +64,40 @@ export default function Login() {
 
     try {
       const res = await axios.post("/login", { username, password });
-      // const { token, user } = res.data;
       const { token } = res.data;
+
       localStorage.setItem("token", token);
 
-      const decoded = jwtDecode(token);
+      let role = "";
+      if (location.pathname.includes("/auth/user/login")) {
+        role = "customer";
+      } else if (location.pathname.includes("/auth/admin/login")) {
+        role = "admin";
+      } else if (location.pathname.includes("/auth/owner/login")) {
+        role = "owner";
+      }
 
-      if (decoded.role === "admin") {
-        navigate("/admin/dashboard");
-      } else {
-        navigate("/dashboard");
+      const validateRes = await axios.get(`/validate-${role}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (validateRes.status === 200) {
+        if (role === "customer") navigate("/customer/dashboard");
+        if (role === "admin") navigate("/admin/dashboard");
+        if (role === "owner") navigate("/owner/dashboard");
       }
     } catch (err) {
-      console.error("Login failed:", err);
-      ShowError(
-        "Gagal Login! Silakan periksa kembali username dan password Anda."
-      );
+      if (err.response?.status === 403) {
+        ShowError("Akses ditolak: role Anda tidak sesuai");
+      } else if (err.response?.status === 401) {
+        ShowError("Token tidak valid / belum login.");
+      } else {
+        ShowError(
+          "Gagal Login! Silakan periksa kembali username dan password Anda."
+        );
+      }
     }
   };
 

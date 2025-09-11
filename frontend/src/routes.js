@@ -6,7 +6,8 @@ import OwnerDashboard from "views/owner/dashboard";
 import CustomerDashboard from "views/customer/dashboard";
 import NFTMarketplace from "views/admin/marketplace";
 import Booking from "views/admin/booking";
-import Profile from "views/admin/profile";
+import ProfileCopy from "views/admin/profile";
+import Profile from "views/user/profile";
 import DataTables from "views/admin/tables";
 
 // Auth Imports
@@ -72,6 +73,13 @@ const routes = [
     path: "profile",
     icon: <MdPerson className="h-6 w-6" />,
     component: <Profile />,
+  },
+  {
+    name: "Profile Copy",
+    layout: "/owner",
+    path: "profile",
+    icon: <MdPerson className="h-6 w-6" />,
+    component: <ProfileCopy />,
   },
   {
     name: "Admin Login",
