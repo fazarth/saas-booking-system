@@ -87,6 +87,8 @@ export default function Login() {
         if (role === "customer") navigate("/customer/dashboard");
         if (role === "admin") navigate("/admin/dashboard");
         if (role === "owner") navigate("/owner/dashboard");
+
+        localStorage.setItem("role", role);
       }
     } catch (err) {
       if (err.response?.status === 403) {

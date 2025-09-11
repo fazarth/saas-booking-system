@@ -4,6 +4,7 @@ import Navbar from "components/navbar";
 import Sidebar from "components/sidebar";
 import Footer from "components/footer/Footer";
 import routes from "routes.js";
+import NotFound from "views/notFound";
 
 export default function Admin(props) {
   const { ...rest } = props;
@@ -83,6 +84,8 @@ export default function Admin(props) {
                   path="/"
                   element={<Navigate to="/admin/dashboard" replace />}
                 />
+
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
             <div className="p-3">
