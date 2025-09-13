@@ -1,11 +1,8 @@
-const isOwner = require("../middlewares/isOwner");
 const { Resource } = require("../models");
 
 module.exports = {
   async create(req, res) {
     const userId = req.user.id;
-    if (!(await isOwner(userId)))
-      return res.status(403).json({ error: "Forbidden" });
     if (!req.body.resourceName || !req.body.resourceType) {
       return res
         .status(400)
@@ -30,8 +27,6 @@ module.exports = {
   },
   async getAll(req, res) {
     const userId = req.user.id;
-    if (!(await isOwner(userId)))
-      return res.status(403).json({ error: "Forbidden" });
     const resources = await Resource.findAll({ where: { ownerId: userId } });
     res.json(resources);
   },
