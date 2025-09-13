@@ -54,6 +54,16 @@ const routes = [
     icon: <MdOutlineShoppingCart className="h-6 w-6" />,
     component: <NFTMarketplace />,
     secondary: true,
+    allowedRoles: ["admin"],
+  },
+  {
+    name: "NFT Marketplace",
+    layout: "/admin",
+    path: "nft-marketplace",
+    icon: <MdOutlineShoppingCart className="h-6 w-6" />,
+    component: <NFTMarketplace />,
+    secondary: true,
+    allowedRoles: ["owner"],
   },
   {
     name: "Resources List",
@@ -61,7 +71,7 @@ const routes = [
     path: "booking-list",
     icon: <MdOutlineShoppingCart className="h-6 w-6" />,
     component: <Booking />,
-    // secondary: true,
+    secondary: true,
     allowedRoles: ["owner"],
   },
   {
