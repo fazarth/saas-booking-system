@@ -63,10 +63,10 @@ export default function Login() {
 
     try {
       const res = await axios.post("/login", { username, password });
-      const { token } = res.data;
-      console.log("Token : ", token);
+      const { token, id } = res.data;
 
       localStorage.setItem("token", token);
+      localStorage.setItem("id", id);
 
       let role = "";
       if (location.pathname.includes("/auth/user/login")) {
@@ -77,7 +77,7 @@ export default function Login() {
         role = "owner";
       }
 
-      console.log("Role:", role);
+      console.log("id : ", id);
       const validateRes = await axios.get(`/validate-${role}`, {
         headers: {
           Authorization: `Bearer ${token}`,

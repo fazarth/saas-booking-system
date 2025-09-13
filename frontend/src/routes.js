@@ -6,6 +6,7 @@ import OwnerDashboard from "views/owner/dashboard";
 import CustomerDashboard from "views/customer/dashboard";
 import NFTMarketplace from "views/admin/marketplace";
 import Booking from "views/admin/booking";
+import Resource from "views/owner/resource";
 import ProfileCopy from "views/admin/profile";
 import Profile from "views/user/profile";
 import DataTables from "views/admin/tables";
@@ -58,7 +59,7 @@ const routes = [
   },
   {
     name: "NFT Marketplace",
-    layout: "/admin",
+    layout: "/owner",
     path: "nft-marketplace",
     icon: <MdOutlineShoppingCart className="h-6 w-6" />,
     component: <NFTMarketplace />,
@@ -68,9 +69,9 @@ const routes = [
   {
     name: "Resources List",
     layout: "/owner",
-    path: "booking-list",
+    path: "resouces-list",
     icon: <MdOutlineShoppingCart className="h-6 w-6" />,
-    component: <Booking />,
+    component: <Resource />,
     secondary: true,
     allowedRoles: ["owner"],
   },
