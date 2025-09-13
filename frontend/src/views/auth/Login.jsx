@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import InputField from "components/fields/InputField";
 import axios from "../../api/axios";
-import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import PopUpNotification from "components/popup/PopUpNotification";
 
@@ -65,6 +64,7 @@ export default function Login() {
     try {
       const res = await axios.post("/login", { username, password });
       const { token } = res.data;
+      console.log("Token : ", token);
 
       localStorage.setItem("token", token);
 
@@ -77,6 +77,7 @@ export default function Login() {
         role = "owner";
       }
 
+      console.log("Role:", role);
       const validateRes = await axios.get(`/validate-${role}`, {
         headers: {
           Authorization: `Bearer ${token}`,

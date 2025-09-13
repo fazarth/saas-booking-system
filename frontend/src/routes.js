@@ -29,6 +29,7 @@ const routes = [
     path: "dashboard",
     icon: <MdHome className="h-6 w-6" />,
     component: <AdminDashboard />,
+    allowedRoles: ["admin"],
   },
   {
     name: "Owner Dashboard",
@@ -36,6 +37,7 @@ const routes = [
     path: "dashboard",
     icon: <MdHome className="h-6 w-6" />,
     component: <OwnerDashboard />,
+    allowedRoles: ["owner"],
   },
   {
     name: "Customer Dashboard",
@@ -43,6 +45,7 @@ const routes = [
     path: "dashboard",
     icon: <MdHome className="h-6 w-6" />,
     component: <CustomerDashboard />,
+    allowedRoles: ["customer"],
   },
   {
     name: "NFT Marketplace",
@@ -53,12 +56,22 @@ const routes = [
     secondary: true,
   },
   {
+    name: "Resources List",
+    layout: "/owner",
+    path: "booking-list",
+    icon: <MdOutlineShoppingCart className="h-6 w-6" />,
+    component: <Booking />,
+    // secondary: true,
+    allowedRoles: ["owner"],
+  },
+  {
     name: "Booking List",
     layout: "/admin",
     path: "booking-list",
     icon: <MdOutlineShoppingCart className="h-6 w-6" />,
     component: <Booking />,
-    secondary: true,
+    // secondary: true,
+    allowedRoles: ["customer"],
   },
   {
     name: "Data Tables",
