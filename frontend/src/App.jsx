@@ -1,9 +1,11 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 
-import ProtectedRoute from "components/protectedRoute";
+import ProtectedRoute from "components/protected/protectedRoute";
 import AdminLayout from "layouts/admin";
 import OwnerLayout from "layouts/owner";
+import ProtectedOwnerWithResource from "components/protected/protectedOwnerResource";
+import OwnerDashboard from "views/owner/dashboard";
 import ResourceDetail from "views/owner/resource/view/detail";
 import CustomerLayout from "layouts/customer";
 import AuthLayout from "layouts/auth";
@@ -34,6 +36,14 @@ const App = () => {
           </ProtectedRoute>
         }
       >
+        <Route
+          path="dashboard"
+          element={
+            <ProtectedOwnerWithResource>
+              <OwnerDashboard />
+            </ProtectedOwnerWithResource>
+          }
+        />
         <Route path="resources/:id" element={<ResourceDetail />} />
       </Route>
 

@@ -68,8 +68,9 @@ export default function Login() {
       localStorage.setItem("token", token);
       localStorage.setItem("id", id);
 
+      // Tentukan role
       let role = "";
-      if (location.pathname.includes("/auth/user/login")) {
+      if (location.pathname.includes("/auth/login")) {
         role = "customer";
       } else if (location.pathname.includes("/auth/admin/login")) {
         role = "admin";
@@ -77,7 +78,7 @@ export default function Login() {
         role = "owner";
       }
 
-      console.log("id : ", id);
+      // Validasi role
       const validateRes = await axios.get(`/validate-${role}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -85,11 +86,28 @@ export default function Login() {
       });
 
       if (validateRes.status === 200) {
-        if (role === "customer") navigate("/customer/dashboard");
-        if (role === "admin") navigate("/admin/dashboard");
-        if (role === "owner") navigate("/owner/dashboard");
-
         localStorage.setItem("role", role);
+
+        if (role === "customer") {
+          navigate("/customer/dashboard");
+        } else if (role === "admin") {
+          navigate("/admin/dashboard");
+        } else if (role === "owner") {
+          try {
+            const resourceRes = await axios.get(`/resources`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (resourceRes.data.length === 0) {
+              navigate("/owner/resources-list");
+            } else {
+              navigate("/owner/dashboard");
+            }
+          } catch (err) {
+            console.error("Gagal cek resource:", err);
+            navigate("/owner/resources"); // fallback
+          }
+        }
       }
     } catch (err) {
       if (err.response?.status === 403) {
