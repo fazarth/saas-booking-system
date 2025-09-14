@@ -69,7 +69,7 @@ const routes = [
   {
     name: "Resources List",
     layout: "/owner",
-    path: "resouces-list",
+    path: "resources-list",
     icon: <MdOutlineShoppingCart className="h-6 w-6" />,
     component: <Resource />,
     secondary: true,
