@@ -53,7 +53,7 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
 
   const handleCloseModal = () => {
     setVisible(false);
-    setTimeout(() => setShowModal(false), 3000);
+    setTimeout(() => setShowModal(false), 10);
   };
 
   useEffect(() => {
