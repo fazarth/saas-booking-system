@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function NotFound() {
   const userRole = localStorage.getItem("role");
-  const redirectPath = userRole ? `/${userRole}/dashboard` : "/auth/login";
+  const redirectPath = userRole ? `/${userRole}/dashboard` : "/auth/admin/login";
 
   return (
     <div className="flex h-screen flex-col items-center justify-center bg-gray-100 px-4">

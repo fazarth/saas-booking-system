@@ -1,9 +1,10 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
-import ProtectedRoute from "components/protectedRoute"; // pastikan path sesuai
+import ProtectedRoute from "components/protectedRoute";
 import AdminLayout from "layouts/admin";
 import OwnerLayout from "layouts/owner";
+import ResourceDetail from "views/owner/resource/view/detail";
 import CustomerLayout from "layouts/customer";
 import AuthLayout from "layouts/auth";
 import NotFound from "views/notFound";
@@ -32,7 +33,9 @@ const App = () => {
             <OwnerLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route path="resources/:id" element={<ResourceDetail />} />
+      </Route>
 
       {/* Customer protected */}
       <Route

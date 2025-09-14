@@ -31,7 +31,7 @@ const ResourceList = ({ refresh }) => {
     <div className="z-20 grid grid-cols-1 gap-5 md:grid-cols-3">
       {resources.map((resource) => (
         <ResourceCard
-          key={resource.id}
+          id={resource.id}
           title={resource.resourceName}
           description={resource.description}
           type={resource.resourceType}

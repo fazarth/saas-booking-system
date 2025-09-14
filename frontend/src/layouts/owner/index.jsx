@@ -1,10 +1,9 @@
 import React from "react";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, Outlet } from "react-router-dom"; // ⬅️ tambah Outlet
 import Navbar from "components/navbar";
 import Sidebar from "components/sidebar";
 import Footer from "components/footer/Footer";
 import routes from "routes.js";
-import NotFound from "views/notFound";
 
 export default function Owner(props) {
   const { ...rest } = props;
@@ -84,9 +83,10 @@ export default function Owner(props) {
                   path="/"
                   element={<Navigate to="/owner/dashboard" replace />}
                 />
-
-                <Route path="*" element={<NotFound />} />
               </Routes>
+
+              {/* ⬇️ Tambahkan ini untuk render child route dari App.jsx */}
+              <Outlet />
             </div>
             <div className="p-3">
               <Footer />
