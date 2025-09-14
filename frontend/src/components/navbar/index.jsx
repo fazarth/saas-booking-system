@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import Dropdown from "components/dropdown";
 import { FiAlignJustify } from "react-icons/fi";
 import { Link } from "react-router-dom";
@@ -15,6 +16,23 @@ import avatar from "assets/img/avatars/avatar4.png";
 const Navbar = (props) => {
   const { onOpenSidenav, brandText } = props;
   const [darkmode, setDarkmode] = React.useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    const role = localStorage.getItem("role");
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("id");
+    localStorage.removeItem("role");
+
+    if (role === "admin") {
+      navigate("/auth/admin/login", { replace: true });
+    } else if (role === "owner") {
+      navigate("/auth/owner/login", { replace: true });
+    } else if (role === "customer") {
+      navigate("/auth/user/login", { replace: true });
+    }
+  };
 
   return (
     <nav className="sticky top-4 z-40 flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d]">
@@ -202,18 +220,18 @@ const Navbar = (props) => {
                 >
                   Profile Settings
                 </Link>
-                <a
+                <button
                   href=" "
-                  className="mt-3 text-sm text-gray-800 dark:text-white hover:dark:text-white"
+                  className="mt-3 text-left text-sm text-gray-800 dark:text-white hover:dark:text-white"
                 >
                   Newsletter Settings
-                </a>
-                <a
-                  href=" "
-                  className="mt-3 text-sm font-medium text-red-500 transition duration-150 ease-out hover:text-red-500 hover:ease-in"
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="mt-3 text-left text-sm font-medium text-red-500 transition duration-150 ease-out hover:text-red-500 hover:ease-in"
                 >
                   Log Out
-                </a>
+                </button>
               </div>
             </div>
           }
