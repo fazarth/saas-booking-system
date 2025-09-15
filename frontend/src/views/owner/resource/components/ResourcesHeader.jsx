@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../../../api/axios";
 import PopUpNotification from "components/popup/PopUpNotification";
+import ResourceForm from "./ResourceForm";
 
 const ResourcesHeader = ({ onCreateSuccess }) => {
   const [showModal, setShowModal] = useState(false);
@@ -16,7 +17,8 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
   const [showError, setShowError] = useState(false);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -33,7 +35,6 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
     try {
       const res = await axios.post("/resources", form);
       console.log("Resource created:", res.data);
-      setError("");
       handleCloseModal();
       setForm({ resourceName: "", resourceType: "", description: "" });
 
@@ -52,6 +53,7 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
   };
 
   const handleCloseModal = () => {
+    setForm({ resourceName: "", resourceType: "", description: "" });
     setVisible(false);
     setTimeout(() => setShowModal(false), 10);
   };
@@ -83,7 +85,7 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
 
       {/* Modal Create Resource */}
       {showModal && (
-        <div className="bg-black/50 fixed inset-0 z-50 flex items-center justify-center">
+        <div className="bg-black/50 fixed inset-0 z-10 flex items-center justify-center">
           <div
             className={`transform rounded-xl border border-gray-300 bg-white p-6 shadow-lg transition-all duration-300 ease-out
               ${
@@ -96,50 +98,14 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
 
             {error && <p className="mb-2 text-sm text-red-500">{error}</p>}
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <input
-                type="text"
-                name="resourceName"
-                placeholder="Resource Name"
-                value={form.resourceName}
-                onChange={handleChange}
-                className="w-full rounded-lg border p-3"
-                required
-              />
-              <input
-                type="text"
-                name="resourceType"
-                placeholder="Resource Type"
-                value={form.resourceType}
-                onChange={handleChange}
-                className="w-full rounded-lg border p-3"
-                required
-              />
-              <textarea
-                name="description"
-                placeholder="Description (optional)"
-                value={form.description}
-                onChange={handleChange}
-                className="w-full rounded-lg border p-3"
-              />
-
-              <div className="mt-6 flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={handleCloseModal}
-                  className="rounded-lg bg-gray-300 px-6 py-2 text-sm font-medium hover:bg-gray-400"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="linear rounded-[20px] bg-brand-900 px-6 py-2 text-sm font-medium text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90"
-                >
-                  {loading ? "Creating..." : "Create"}
-                </button>
-              </div>
-            </form>
+            {/* ResourceForm terbaru dengan dropdown */}
+            <ResourceForm
+              form={form}
+              onChange={handleChange}
+              onSubmit={handleSubmit}
+              onCancel={handleCloseModal}
+              loading={loading}
+            />
           </div>
         </div>
       )}

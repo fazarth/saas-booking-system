@@ -4,7 +4,7 @@ import PopUpNotification from "components/popup/PopUpNotification";
 const NeedResourceNotification = ({ onClose }) => {
   return (
     <PopUpNotification
-      type="error"
+      type="warning"
       message="Anda harus membuat resource terlebih dahulu sebelum melanjutkan"
       onClose={onClose}
     />

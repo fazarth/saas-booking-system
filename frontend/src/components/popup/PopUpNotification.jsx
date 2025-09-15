@@ -4,7 +4,8 @@ const PopUpNotification = ({ type, message, onClose }) => {
   const [visible, setVisible] = useState(false);
 
   const isError = type === "error";
-  const icon = isError ? "❌" : "✅";
+  const isWarning = type === "warning";
+  const icon = isError ? "❌" : isWarning ? "⚠️" : "✅";
 
   useEffect(() => {
     const timer = setTimeout(() => setVisible(true), 10);
@@ -28,7 +29,7 @@ const PopUpNotification = ({ type, message, onClose }) => {
       >
         <div className="mb-4 flex flex-col items-center justify-between">
           <h2 className="text-center text-xl font-semibold">
-            {isError ? "Error" : "Success"}
+            {isError ? "Error" : isWarning ? "Warning" : "Success"}
           </h2>
         </div>
         <span className="flex flex-col items-center justify-center text-4xl">
