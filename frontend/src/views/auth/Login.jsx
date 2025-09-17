@@ -1,43 +1,106 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import InputField from "components/fields/InputField";
 import axios from "../../api/axios";
 import { useNavigate } from "react-router-dom";
+import PopUpNotification from "components/popup/PopUpNotification";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const [isPopUpVisible, setPopUpVisible] = useState(false);
+  const [popType, setPopType] = useState("");
+  const [popupMessage, setPopUpMessage] = useState("");
+
+  const routes = [
+    {
+      name: "Admin Login",
+      layout: "/auth",
+      path: "admin/login",
+      component: <Login />,
+    },
+    {
+      name: "Owner Login",
+      layout: "/auth",
+      path: "owner/login",
+      component: <Login />,
+    },
+    {
+      name: "Customer Login",
+      layout: "/auth",
+      path: "user/login",
+      component: <Login />,
+    },
+  ];
+
+  const getRouteName = () => {
+    const currentRoute = routes.find((route) =>
+      location.pathname.includes(route.path)
+    );
+    return currentRoute ? currentRoute.name : "Login";
+  };
+
+  const ShowError = (message) => {
+    setPopType("error");
+    setPopUpMessage(message);
+    setPopUpVisible(true);
+  };
+
+  const closePopUp = () => {
+    setPopUpVisible(false);
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
-      alert("Email dan password wajib diisi");
+    if (!username || !password) {
+      ShowError("Username dan Password wajib diisi!");
       return;
     }
 
     try {
-      console.log("Sending login request to:", "/auth/login", {
-        email,
-        password,
-      });
-      const res = await axios.post("/auth/login", { email, password });
-      const { token, user, role } = res.data;
-      console.log("Sending login request to:", "/auth/login", {
-        email,
-        password,
-      });
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+      const res = await axios.post("/login", { username, password });
+      const { token, id } = res.data;
 
-      if (role === "Admin") {
-        navigate("/admin/default");
-      } else {
-        navigate("/dashboard");
+      localStorage.setItem("token", token);
+      localStorage.setItem("id", id);
+
+      let role = "";
+      if (location.pathname.includes("/auth/user/login")) {
+        role = "customer";
+      } else if (location.pathname.includes("/auth/admin/login")) {
+        role = "admin";
+      } else if (location.pathname.includes("/auth/owner/login")) {
+        role = "owner";
+      }
+
+      console.log("id : ", id);
+      const validateRes = await axios.get(`/validate-${role}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (validateRes.status === 200) {
+        if (role === "customer") navigate("/customer/dashboard");
+        if (role === "admin") navigate("/admin/dashboard");
+        if (role === "owner") navigate("/owner/dashboard");
+
+        localStorage.setItem("role", role);
       }
     } catch (err) {
-      console.error("Login failed:", err);
-      alert(err.response?.data?.message || "Login gagal");
+      if (err.response?.status === 403) {
+        ShowError("Akses ditolak: role Anda tidak sesuai");
+      } else if (err.response?.status === 401) {
+        ShowError("Token tidak valid / belum login.");
+      } else {
+        ShowError(
+          "Gagal Login! Silakan periksa kembali username dan password Anda."
+        );
+      }
     }
   };
 
@@ -45,28 +108,28 @@ export default function Login() {
     <div className="mb-16 mt-16 flex h-full w-full items-start justify-start px-4 md:px-16 lg:px-16">
       <div className="mt-[10vh] w-full max-w-[420px] flex-col items-start">
         <h4 className="mb-2.5 text-4xl font-bold text-navy-700 dark:text-white">
-          Login
+          {getRouteName()}
         </h4>
         <p className="mb-9 ml-1 text-base text-gray-600">
-          Enter your email and password to login
+          Enter your username and password to login
         </p>
 
         <form onSubmit={handleLogin}>
           <InputField
             variant="auth"
             extra="mb-3"
-            label="Email*"
-            placeholder="mail@example.com"
-            id="email"
+            label="Username"
+            // placeholder="mail@example.com"
+            id="username"
             type="text"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
 
           <InputField
             variant="auth"
             extra="mb-3"
-            label="Password*"
+            label="Password"
             placeholder="Min. 8 characters"
             id="password"
             type="password"
@@ -94,6 +157,14 @@ export default function Login() {
           </a>
         </div>
       </div>
+
+      {isPopUpVisible && (
+        <PopUpNotification
+          type={popType}
+          message={popupMessage}
+          onClose={closePopUp}
+        />
+      )}
     </div>
   );
 }

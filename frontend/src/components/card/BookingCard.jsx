@@ -1,9 +1,16 @@
 import { IoHeart, IoHeartOutline } from "react-icons/io5";
 import { useState } from "react";
 import Card from "components/card";
+import PopUpConfirmation from "components/popup/PopUpConfirmation";
 
 const BookingCard = ({ title, description, type, isActive, extra }) => {
   const [heart, setHeart] = useState(true);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const handleConfirmBooking = () => {
+    setShowConfirm(false);
+    console.log("Booking confirmed for:", title);
+  };
 
   return (
     <Card
@@ -42,11 +49,22 @@ const BookingCard = ({ title, description, type, isActive, extra }) => {
 
         {/* Action button */}
         <div className="flex justify-end">
-          <button className="linear rounded-[20px] bg-brand-900 px-4 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90">
+          <button
+            onClick={() => setShowConfirm(true)}
+            className="linear rounded-[20px] bg-brand-900 px-4 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90"
+          >
             Book Now
           </button>
         </div>
       </div>
+      {showConfirm && (
+        <PopUpConfirmation
+          title="Confirm Booking"
+          message={`Are you sure want to book "${title}"`}
+          onConfirm={handleConfirmBooking}
+          onCancel={() => setShowConfirm(false)}
+        />
+      )}
     </Card>
   );
 };

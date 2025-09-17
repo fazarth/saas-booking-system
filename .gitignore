@@ -1,15 +1,41 @@
-/node_modules
+# Node modules
+node_modules/
 
-npm-debug.log
-yarn-error.log
-logs
-
+# Environment files
 .env
+.env.*
+.env.local
+.env.test
 
-/sequelize-migrations
-/sequelize-seed
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
 
-Thumbs.db   # Windows specific
+# Build output
+dist/
+build/
+coverage/
 
+# Database files
+*.sqlite
+*.db
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
 .vscode/
 .idea/
+*.swp
+
+# Sequelize CLI files
+migrations/
+seeders/
+
+# Misc
+*.bak
+*.tmp
