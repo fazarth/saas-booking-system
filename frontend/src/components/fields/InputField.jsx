@@ -2,6 +2,7 @@ function InputField(props) {
   const {
     label,
     id,
+    name,
     extra,
     type,
     placeholder,
@@ -26,8 +27,10 @@ function InputField(props) {
         disabled={disabled}
         type={type}
         id={id}
-        value={value} // ✅ tambahkan ini
-        onChange={onChange} // ✅ tambahkan ini
+        name={name || id}
+        value={value}
+        onChange={onChange}
+        i
         placeholder={placeholder}
         className={`mt-2 flex h-12 w-full items-center justify-center rounded-xl border bg-white/0 p-3 text-sm outline-none ${
           disabled === true

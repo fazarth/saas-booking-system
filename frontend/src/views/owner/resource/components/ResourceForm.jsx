@@ -35,6 +35,7 @@ const ResourceForm = ({ form, onChange, onSubmit, onCancel, loading }) => {
       <InputField
         label="Resource Name"
         id="resourceName"
+        name="resourceName"
         type="text"
         placeholder="Resource Name"
         value={form.resourceName}
@@ -73,6 +74,7 @@ const ResourceForm = ({ form, onChange, onSubmit, onCancel, loading }) => {
       <InputField
         label="Description (optional)"
         id="description"
+        name="description"
         type="text"
         placeholder="Description (optional)"
         value={form.description}

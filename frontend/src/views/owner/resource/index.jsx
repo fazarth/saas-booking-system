@@ -52,14 +52,14 @@ const Resources = () => {
           <ResourceList refresh={refresh} />
 
           {/* Recenlty Added setion */}
-          <div className="mb-5 mt-5 flex items-center justify-between px-[26px]">
+          {/* <div className="mb-5 mt-5 flex items-center justify-between px-[26px]">
             <h4 className="text-2xl font-bold text-navy-700 dark:text-white">
               Recently Added
             </h4>
-          </div>
+          </div> */}
 
           {/* Recently Add NFTs */}
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+          {/* <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             <BookingCard
               bidders={[avatar1, avatar2, avatar3]}
               title="Abstract Colors"
@@ -81,7 +81,7 @@ const Resources = () => {
               price="2.91"
               image={NFt6}
             />
-          </div>
+          </div> */}
         </div>
 
         {/* right side section */}

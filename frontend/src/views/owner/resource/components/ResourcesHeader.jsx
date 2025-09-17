@@ -71,16 +71,22 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
         <h4 className="ml-1 text-2xl font-bold text-navy-700 dark:text-white">
           Available Resources
         </h4>
-        <ul className="mt-4 flex items-center justify-between md:mt-0 md:justify-center md:!gap-5 2xl:!gap-12">
+        {/* <ul className="mt-4 flex items-center justify-between md:mt-0 md:justify-center md:!gap-5 2xl:!gap-12">
           <li>
-            <button
-              className="linear rounded-[20px] bg-brand-900 px-4 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90"
-              onClick={() => setShowModal(true)}
-            >
+            <button className="linear rounded-[20px] bg-brand-900 px-4 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90">
               Create Resource
             </button>
           </li>
-        </ul>
+        </ul> */}
+      </div>
+
+      <div className="my-48 flex justify-center">
+        <button
+          className="linear rounded-[20px] bg-brand-900 px-4 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90"
+          onClick={() => setShowModal(true)}
+        >
+          Create Resource
+        </button>
       </div>
 
       {/* Modal Create Resource */}
