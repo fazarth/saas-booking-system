@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import axios from "api/axios";
 
 import Banner from "./components/Banner";
 import NFt2 from "assets/img/nfts/Nft2.png";
@@ -24,6 +25,8 @@ import useNeedResourceNotification from "hooks/owner/useNeedResourceNotification
 
 const Resources = () => {
   const [refresh, setRefresh] = useState(false);
+  const [resources, setResources] = useState([]);
+
   const handleRefreshResources = () => {
     setRefresh((prev) => !prev);
   };
@@ -32,33 +35,46 @@ const Resources = () => {
     useNeedResourceNotification();
 
   useEffect(() => {
-    const hasResource = false;
-    if (!hasResource) {
-      triggerNotification();
-    }
-  }, []);
+    const fetchResources = async () => {
+      try {
+        const res = await axios.get("/resources");
+        setResources(res.data);
+
+        if (res.data.length === 0) {
+          triggerNotification();
+        }
+      } catch (err) {
+        console.error("Error fetching resources:", err);
+        triggerNotification();
+      }
+    };
+
+    fetchResources();
+  }, [refresh]);
 
   return (
     <>
       {show && <NeedResourceNotification onClose={closeNotification} />}
       <div className="mt-3 grid h-full grid-cols-1 gap-5 xl:grid-cols-2 2xl:grid-cols-3">
         <div className="col-span-1 h-fit w-full xl:col-span-1 2xl:col-span-2">
-          {/* Resources Banner */}
-          <Banner />
-
           {/* Resources Header */}
-          <ResourcesHeader onCreateSuccess={handleRefreshResources} />
+          <ResourcesHeader
+            onCreateSuccess={handleRefreshResources}
+            resources={resources} // kasih ke header biar bisa pakai resourceName
+          />
+
+          {/* Resources Banner */}
+          {resources.length > 0 && <Banner />}
 
           <ResourceList refresh={refresh} />
 
-          {/* Recenlty Added setion */}
+          {/* Recently Added (opsional) */}
           {/* <div className="mb-5 mt-5 flex items-center justify-between px-[26px]">
             <h4 className="text-2xl font-bold text-navy-700 dark:text-white">
               Recently Added
             </h4>
           </div> */}
 
-          {/* Recently Add NFTs */}
           {/* <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             <BookingCard
               bidders={[avatar1, avatar2, avatar3]}
@@ -85,7 +101,6 @@ const Resources = () => {
         </div>
 
         {/* right side section */}
-
         <div className="col-span-1 h-full w-full rounded-xl 2xl:col-span-1">
           <TopCreatorTable
             extra="mb-5"

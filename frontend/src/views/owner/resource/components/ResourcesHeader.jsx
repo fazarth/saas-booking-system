@@ -4,6 +4,7 @@ import PopUpNotification from "components/popup/PopUpNotification";
 import ResourceForm from "./ResourceForm";
 
 const ResourcesHeader = ({ onCreateSuccess }) => {
+  const [resources, setResources] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [visible, setVisible] = useState(false);
   const [form, setForm] = useState({
@@ -64,30 +65,66 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
     }
   }, [showModal]);
 
+  useEffect(() => {
+    const fetchResources = async () => {
+      try {
+        const res = await axios.get("/resources");
+        setResources(res.data || []);
+      } catch (err) {
+        console.error("Failed to fetch resources:", err);
+      }
+    };
+
+    fetchResources();
+  }, []);
+
   return (
     <>
       {/* Header */}
-      <div className="mb-4 mt-5 flex flex-col justify-between px-4 md:flex-row md:items-center">
+      <div className="mb-4 mt-5 flex flex-col px-4">
         <h4 className="ml-1 text-2xl font-bold text-navy-700 dark:text-white">
-          Available Resources
+          {resources.length === 0
+            ? "Available Resource"
+            : resources[0].resourceName}
         </h4>
-        {/* <ul className="mt-4 flex items-center justify-between md:mt-0 md:justify-center md:!gap-5 2xl:!gap-12">
-          <li>
-            <button className="linear rounded-[20px] bg-brand-900 px-4 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90">
-              Create Resource
-            </button>
-          </li>
-        </ul> */}
+
+        {resources.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {["course", "health", "room", "vehicle"].map((type) =>
+              resources.some((r) => r.resourceType === type) ? (
+                <button
+                  key={type}
+                  className="linear rounded-[20px] bg-brand-900 px-4 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90"
+                >
+                  Add New {type.charAt(0).toUpperCase() + type.slice(1)}
+                </button>
+              ) : null
+            )}
+          </div>
+        )}
       </div>
 
-      <div className="my-48 flex justify-center">
-        <button
-          className="linear rounded-[20px] bg-brand-900 px-4 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90"
-          onClick={() => setShowModal(true)}
-        >
-          Create Resource
-        </button>
-      </div>
+      {/* {resources.length !== 0 && (
+        <div className="my-48 flex justify-center">
+          <button
+            className="linear rounded-[20px] bg-brand-900 px-4 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90"
+            onClick={() => setShowModal(true)}
+          >
+            Create Resource
+          </button>
+        </div>
+      )} */}
+
+      {resources.length === 0 && (
+        <div className="my-48 flex justify-center">
+          <button
+            className="linear rounded-[20px] bg-brand-900 px-4 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90"
+            onClick={() => setShowModal(true)}
+          >
+            Create Resource
+          </button>
+        </div>
+      )}
 
       {/* Modal Create Resource */}
       {showModal && (

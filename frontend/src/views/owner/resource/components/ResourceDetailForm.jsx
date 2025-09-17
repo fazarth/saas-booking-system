@@ -25,9 +25,8 @@ const ResourceForm = ({ form, onChange, onSubmit, onCancel, loading }) => {
   useOutsideAlerter(dropdownRef, setOpenWrapper);
 
   const handleSelectType = (value) => {
-    const lowerValue = value.toLowerCase();
     setSelectedType(value);
-    onChange({ target: { name: "resourceType", value: lowerValue } });
+    onChange({ target: { name: "resourceType", value } });
     setOpenWrapper(false);
   };
 

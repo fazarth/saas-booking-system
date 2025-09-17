@@ -1,15 +1,12 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 export default function useNeedResourceNotification() {
   const [show, setShow] = useState(false);
-
-  const triggerNotification = () => {
+  const triggerNotification = useCallback(() => {
     setShow(true);
-  };
-
-  const closeNotification = () => {
+  }, []);
+  const closeNotification = useCallback(() => {
     setShow(false);
-  };
-
+  }, []);
   return { show, triggerNotification, closeNotification };
 }
