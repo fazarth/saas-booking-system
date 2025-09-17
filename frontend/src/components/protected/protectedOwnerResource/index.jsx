@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import useOwnerHasResource from "hooks/owner/useOwnerHasResource";
+import useOwnerHasResource from "hooks/owner/validateHasResource/useOwnerHasResource";
 
 export default function ProtectedOwnerWithResource({ children }) {
   const { hasResource, loading } = useOwnerHasResource();

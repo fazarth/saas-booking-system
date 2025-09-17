@@ -21,7 +21,7 @@ import ResourcesHeader from "./components/ResourcesHeader";
 import ResourceList from "./components/ResourceList";
 
 import NeedResourceNotification from "components/role/owner/NeedResourceNotification";
-import useNeedResourceNotification from "hooks/owner/useNeedResourceNotification";
+import useNeedResourceNotification from "hooks/owner/validateHasResource/useNeedResourceNotification";
 
 const Resources = () => {
   const [refresh, setRefresh] = useState(false);
