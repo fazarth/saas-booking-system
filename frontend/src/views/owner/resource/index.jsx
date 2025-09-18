@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "api/axios";
 
-import Banner from "./components/Banner";
+import Banner from "./components/resourcePage/Banner";
 import NFt2 from "assets/img/nfts/Nft2.png";
 import NFt4 from "assets/img/nfts/Nft4.png";
 import NFt3 from "assets/img/nfts/Nft3.png";
@@ -13,12 +13,12 @@ import avatar3 from "assets/img/avatars/avatar3.png";
 
 import tableDataTopCreators from "views/customer/booking/variables/tableDataTopCreators.json";
 import { tableColumnsTopCreators } from "views/customer/booking/variables/tableColumnsTopCreators";
-import HistoryCard from "./components/HistoryCard";
+import HistoryCard from "./components/resourcePage/HistoryCard";
 import TopCreatorTable from "./components/TableTopCreators";
 import BookingCard from "components/card/BookingCard";
 
-import ResourcesHeader from "./components/ResourcesHeader";
-import ResourceList from "./components/ResourceList";
+import ResourcesHeader from "./components/resourcePage/ResourcesHeader";
+import ResourceList from "./components/resourcePage/ResourceList";
 
 import NeedResourceNotification from "components/role/owner/NeedResourceNotification";
 import useNeedResourceNotification from "hooks/owner/validateHasResource/useNeedResourceNotification";

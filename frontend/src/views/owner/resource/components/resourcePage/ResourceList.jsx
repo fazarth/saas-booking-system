@@ -5,7 +5,7 @@ import NFt from "assets/img/nfts/Nft3.png";
 
 import { jwtDecode } from "jwt-decode";
 
-const ResourceList = ({ ownerId, refresh }) => {
+const ResourceList = ({ refresh }) => {
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -33,7 +33,6 @@ const ResourceList = ({ ownerId, refresh }) => {
         const ownerResources = (res.data || []).filter(
           (r) => r.ownerId === ownerId
         );
-        console.log("Owner resources:", ownerResources);
 
         const details = await Promise.all(
           ownerResources.map(async (r) => {
@@ -75,7 +74,7 @@ const ResourceList = ({ ownerId, refresh }) => {
         {resources.map((detail) => (
           <ResourceCard
             key={detail.id}
-            id={detail.id}
+            id={detail.resourceId}
             title={`${detail.resourceName} @ ${detail.location || "N/A"}`}
             description={`Capacity: ${detail.capacity || "-"}, Facilities: ${
               detail.facilities || "-"

@@ -1,22 +1,24 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import axios from "../../../../../api/axios";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "api/axios";
 
 import NFt from "assets/img/nfts/Nft3.png";
 import PopUpConfirmation from "components/popup/PopUpConfirmation";
 import PopUpNotification from "components/popup/PopUpNotification";
+import ResourceDetailForm from "../../components/form/ResourceDetailForm";
 
 const ResourceDetail = () => {
-  const { id } = useParams();
+  const { id: resourceId } = useParams();
+  const navigate = useNavigate();
+
   const [resource, setResource] = useState(null);
-  const [loading, setLoading] = useState(null);
+  const [slots, setSlots] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Popup states
+  // Popups & notifications
   const [isConfirmPopup, setIsConfirmPopup] = useState(false);
   const [confirmVisible, setConfirmVisible] = useState(false);
-
   const [notification, setNotification] = useState(null);
   const [notificationVisible, setNotificationVisible] = useState(false);
 
@@ -29,57 +31,61 @@ const ResourceDetail = () => {
   });
   const [editLoading, setEditLoading] = useState(false);
 
-  const navigate = useNavigate();
-
-  // Fetch resource
+  // Fetch resource + availability
   useEffect(() => {
-    const fetchResource = async () => {
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        const res = await axios.get(`/resources/${id}`);
-        setResource(res.data);
+        const resResource = await axios.get(`/resources/${resourceId}/all`);
+        setResource(resResource.data[0]);
+
+        const resSlots = await axios.get(
+          `/availability/resource/${resourceId}`
+        );
+        setSlots(resSlots.data[0] || null);
+
+        setError(null);
       } catch (err) {
-        setError(err.response?.data?.error || "Failed to fetch resource");
+        setError(err.response?.data?.error || "Failed to fetch resource data");
+        setResource(null);
+        setSlots(null);
       } finally {
         setLoading(false);
       }
     };
-    fetchResource();
-  }, [id]);
 
-  // Confirmation popup animation
+    fetchData();
+  }, [resourceId]);
+
   useEffect(() => {
-    if (isConfirmPopup) setTimeout(() => setConfirmVisible(true), 10);
-    else setConfirmVisible(false);
-  }, [isConfirmPopup]);
+    if (resource) {
+      console.log("Updated state resource:", resource);
+    }
+  }, [resource]);
 
-  // Edit modal animation
   useEffect(() => {
-    if (isEditModal) setTimeout(() => setEditVisible(true), 10);
-    else setEditVisible(false);
-  }, [isEditModal]);
+    console.log("Updated state slots:", slots);
+  }, [slots]);
 
-  // Notification animation
+  // Notification & modal animations
   useEffect(() => {
     if (notification) setTimeout(() => setNotificationVisible(true), 10);
     else setNotificationVisible(false);
   }, [notification]);
 
-  const handleDelete = async () => {
-    try {
-      const res = await axios.delete(`/resources/${id}`);
-      setConfirmVisible(false);
-      setTimeout(() => setIsConfirmPopup(false), 300);
-      setNotification({ type: "success", message: res.data.message });
-      setTimeout(() => navigate("/owner/resources-list"), 1500);
-    } catch (err) {
-      setNotification({
-        type: "error",
-        message: err.response?.data?.error || "Failed to delete resource",
-      });
-    }
-  };
+  useEffect(() => {
+    if (isEditModal) setTimeout(() => setEditVisible(true), 10);
+    else setEditVisible(false);
+  }, [isEditModal]);
 
+  useEffect(() => {
+    if (isConfirmPopup) setTimeout(() => setConfirmVisible(true), 10);
+    else setConfirmVisible(false);
+  }, [isConfirmPopup]);
+
+  // Handlers
   const handleOpenEdit = () => {
+    if (!resource) return;
     setEditForm({
       resourceName: resource.resourceName,
       resourceType: resource.resourceType,
@@ -101,7 +107,7 @@ const ResourceDetail = () => {
 
     try {
       setEditLoading(true);
-      const res = await axios.put(`/resources/${id}`, editForm);
+      const res = await axios.put(`/resources/${resourceId}`, editForm);
       setResource(res.data);
       setEditVisible(false);
       setTimeout(() => setIsEditModal(false), 300);
@@ -119,6 +125,21 @@ const ResourceDetail = () => {
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      const res = await axios.delete(`/resources/${resourceId}`);
+      setConfirmVisible(false);
+      setTimeout(() => setIsConfirmPopup(false), 300);
+      setNotification({ type: "success", message: res.data.message });
+      setTimeout(() => navigate("/owner/resources-list"), 1500);
+    } catch (err) {
+      setNotification({
+        type: "error",
+        message: err.response?.data?.error || "Failed to delete resource",
+      });
+    }
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
@@ -126,28 +147,64 @@ const ResourceDetail = () => {
     <div className="p-6">
       {resource ? (
         <div className="rounded-lg bg-white p-6 shadow-md">
-          <h1 className="text-2xl font-bold">{resource.resourceName}</h1>
+          {/* Title */}
+          <h1 className="text-2xl font-bold">{resource.location}</h1>
+
+          {/* Image */}
           <img
             src={NFt}
-            alt={resource.resourceName}
+            alt={resource.location}
             className="mb-4 w-full rounded-lg"
           />
-          <p className="mt-2 text-gray-600">{resource.description}</p>
-          <p className="mt-2 text-sm text-gray-500">
-            Type: {resource.resourceType}
-          </p>
 
+          {/* Room Details */}
+          <div className="mt-2 space-y-1 text-gray-600">
+            <p>
+              <span className="font-semibold">Capacity:</span>{" "}
+              {resource.capacity}
+            </p>
+            <p>
+              <span className="font-semibold">Facilities:</span>{" "}
+              {resource.facilities}
+            </p>
+            <p>
+              <span className="font-semibold">Floor:</span> {resource.floor}
+            </p>
+            <p>
+              <span className="font-semibold">Price/Hour:</span> Rp{" "}
+              {resource.pricePerHour}
+            </p>
+          </div>
+
+          {/* Availability Slot */}
+          <div className="mt-4">
+            <h3 className="font-semibold text-gray-700">Available Slot:</h3>
+            {!slots || Object.keys(slots).length === 0 ? (
+              <p className="text-gray-500">No available slot</p>
+            ) : (
+              <div className="text-gray-600">
+                <p>
+                  <span className="font-semibold">Day:</span> {slots.dayOfWeek}
+                </p>
+                <p>
+                  <span className="font-semibold">Time:</span> {slots.startTime}{" "}
+                  - {slots.endTime}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Action Buttons */}
           <div className="mt-6 flex justify-end gap-4">
             <button
               onClick={handleOpenEdit}
-              className="linear rounded-[20px] bg-brand-900 px-4 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90"
+              className="linear rounded-[20px] bg-brand-900 px-4 py-2 text-base font-medium text-white"
             >
               Edit
             </button>
-
             <button
               onClick={() => setIsConfirmPopup(true)}
-              className="linear rounded-[20px] bg-brand-900 px-4 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90"
+              className="linear rounded-[20px] bg-brand-900 px-4 py-2 text-base font-medium text-white"
             >
               Delete
             </button>
@@ -157,10 +214,10 @@ const ResourceDetail = () => {
         <p>Resource not found</p>
       )}
 
-      {/* Popup Confirmation */}
+      {/* Popups */}
       {isConfirmPopup && (
         <div
-          className={`fixed inset-0 z-50 flex transform items-center justify-center transition-all duration-300 ease-out ${
+          className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ease-out ${
             confirmVisible ? "scale-100 opacity-100" : "scale-90 opacity-0"
           }`}
         >
@@ -173,65 +230,25 @@ const ResourceDetail = () => {
         </div>
       )}
 
-      {/* Edit Modal */}
       {isEditModal && (
         <div
-          className={`fixed inset-0 z-50 flex transform items-center justify-center transition-all duration-300 ease-out ${
+          className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ease-out ${
             editVisible ? "scale-100 opacity-100" : "scale-90 opacity-0"
           }`}
         >
           <div className="w-full max-w-3xl transform rounded-xl border border-gray-300 bg-white p-6 shadow-lg">
             <h3 className="mb-4 text-2xl font-bold">Edit Resource</h3>
-
-            <form onSubmit={handleEditSubmit} className="flex flex-col gap-4">
-              <input
-                type="text"
-                name="resourceName"
-                value={editForm.resourceName}
-                onChange={handleEditChange}
-                placeholder="Resource Name"
-                className="w-full rounded-lg border p-3"
-                required
-              />
-              <input
-                type="text"
-                name="resourceType"
-                value={editForm.resourceType}
-                onChange={handleEditChange}
-                placeholder="Resource Type"
-                className="w-full rounded-lg border p-3"
-                required
-              />
-              <textarea
-                name="description"
-                value={editForm.description}
-                onChange={handleEditChange}
-                placeholder="Description (optional)"
-                className="w-full rounded-lg border p-3"
-              />
-
-              <div className="mt-6 flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsEditModal(false)}
-                  className="linear rounded-[20px] bg-gray-300 px-6 py-2 text-sm font-medium hover:bg-gray-400"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={editLoading}
-                  className="linear rounded-[20px] bg-brand-900 px-6 py-2 text-sm font-medium text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90"
-                >
-                  {editLoading ? "Updating..." : "Update"}
-                </button>
-              </div>
-            </form>
+            <ResourceDetailForm
+              formData={editForm}
+              onChange={handleEditChange}
+              onSubmit={handleEditSubmit}
+              onCancel={() => setIsEditModal(false)}
+              loading={editLoading}
+            />
           </div>
         </div>
       )}
 
-      {/* Notification */}
       {notification && (
         <div
           className={`fixed inset-0 right-5 z-50 transform transition-all duration-300 ease-out ${

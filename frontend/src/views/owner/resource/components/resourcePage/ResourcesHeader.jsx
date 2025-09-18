@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import axios from "../../../../api/axios";
+import axios from "../../../../../api/axios";
 import PopUpNotification from "components/popup/PopUpNotification";
-import ResourceForm from "./ResourceForm";
+import ResourceForm from "../form/ResourceForm";
 
 const ResourcesHeader = ({ onCreateSuccess }) => {
   const [resources, setResources] = useState([]);
