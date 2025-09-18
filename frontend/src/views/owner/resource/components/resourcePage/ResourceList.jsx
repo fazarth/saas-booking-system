@@ -39,14 +39,19 @@ const ResourceList = ({ refresh }) => {
             const detailRes = await axios.get(`/resources/${r.id}/all`, {
               headers: { Authorization: `Bearer ${token}` },
             });
-            const detailData = Array.isArray(detailRes.data)
-              ? detailRes.data[0]
-              : detailRes.data;
-            return { ...r, ...detailData };
+
+            // hasil dari API bisa array, jadi pastikan selalu array
+            const detailArray = Array.isArray(detailRes.data)
+              ? detailRes.data
+              : [detailRes.data];
+
+            // gabungkan setiap detail dengan resource utama
+            return detailArray.map((d) => ({ ...r, ...d }));
           })
         );
 
-        setResources(details);
+        // flatten array of arrays → jadi array 1D
+        setResources(details.flat());
       } catch (err) {
         console.error("Error fetching resources:", err);
         setError("Gagal mengambil data resources.");

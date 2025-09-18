@@ -1,6 +1,6 @@
 import React from "react";
 
-const ResourceDetailForm = ({
+const SlotsAvailabilityForm = ({
   formData,
   onChange,
   onSubmit,
@@ -11,70 +11,81 @@ const ResourceDetailForm = ({
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          Location
+          Day of Week
         </label>
         <input
           type="text"
-          name="location"
-          value={formData.location}
+          name="dayOfWeek"
+          value={formData.dayOfWeek}
           onChange={onChange}
           className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-          placeholder="Ex: Lantai 2"
+          placeholder="e.g. Monday"
         />
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          Capacity
+          Start Time
         </label>
         <input
-          type="number"
-          name="capacity"
-          value={formData.capacity}
+          type="time"
+          name="startTime"
+          value={formData.startTime}
           onChange={onChange}
           className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-          placeholder="Ex: 10"
         />
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          Facilities
+          End Time
         </label>
         <input
-          type="text"
-          name="facilities"
-          value={formData.facilities}
+          type="time"
+          name="endTime"
+          value={formData.endTime}
           onChange={onChange}
           className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-          placeholder="Ex: AC, Proyektor"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Floor</label>
-        <input
-          type="text"
-          name="floor"
-          value={formData.floor}
-          onChange={onChange}
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-          placeholder="Ex: 2"
         />
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          Price per Hour
+          Start Date
         </label>
         <input
-          type="number"
-          name="pricePerHour"
-          value={formData.pricePerHour}
+          type="date"
+          name="startDate"
+          value={formData.startDate}
           onChange={onChange}
           className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-          placeholder="Ex: 150000"
         />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          End Date
+        </label>
+        <input
+          type="date"
+          name="endDate"
+          value={formData.endDate}
+          onChange={onChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2"
+        />
+      </div>
+
+      <div className="flex items-center">
+        <input
+          type="checkbox"
+          name="isActive"
+          checked={formData.isActive}
+          onChange={(e) =>
+            onChange({ target: { name: "isActive", value: e.target.checked } })
+          }
+          className="mr-2"
+        />
+        <label>Active</label>
       </div>
 
       <div className="flex justify-end gap-2 pt-4">
@@ -88,7 +99,7 @@ const ResourceDetailForm = ({
         <button
           type="submit"
           disabled={loading}
-          className="linear rounded-[20px] bg-brand-900 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+          className="linear rounded-[20px] bg-blue-600 bg-brand-900 px-4 py-2 text-white hover:bg-green-700 disabled:opacity-50"
         >
           {loading ? "Saving..." : "Save"}
         </button>
@@ -97,4 +108,4 @@ const ResourceDetailForm = ({
   );
 };
 
-export default ResourceDetailForm;
+export default SlotsAvailabilityForm;

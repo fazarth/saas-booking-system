@@ -1,43 +1,85 @@
 import React, { useState, useEffect } from "react";
-import axios from "../../../../../api/axios";
+import axios from "api/axios";
 import PopUpNotification from "components/popup/PopUpNotification";
 import ResourceForm from "../form/ResourceForm";
+import ResourceDetailForm from "../form/ResourceDetailForm";
+import SlotsAvailabilityForm from "../form/SlotsAvailabilityForm";
 
 const ResourcesHeader = ({ onCreateSuccess }) => {
   const [resources, setResources] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [form, setForm] = useState({
+
+  const [step, setStep] = useState("resource");
+
+  const [activeResourceId, setActiveResourceId] = useState(null);
+
+  const [resourceForm, setResourceForm] = useState({
     resourceName: "",
     resourceType: "",
     description: "",
   });
+
+  const [resourceDetailForm, setResourceDetailForm] = useState({
+    location: "",
+    capacity: "",
+    facilities: "",
+    floor: "",
+    pricePerHour: "",
+  });
+
+  const [availabilityForm, setAvailabilityForm] = useState({
+    dayOfWeek: "",
+    startTime: "",
+    endTime: "",
+    startDate: "",
+    endDate: "",
+    isActive: true,
+  });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
 
-  const handleChange = (e) => {
+  // ----------------------------
+  // Handlers
+  // ----------------------------
+  const handleResourceChange = (e) => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    setResourceForm({ ...resourceForm, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleDetailChange = (e) => {
+    const { name, value } = e.target;
+    setResourceDetailForm({ ...resourceDetailForm, [name]: value });
+  };
+
+  const handleAvailabilityChange = (e) => {
+    const { name, value } = e.target;
+    setAvailabilityForm({ ...availabilityForm, [name]: value });
+  };
+
+  const handleResourceSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    if (!form.resourceName || !form.resourceType) {
+    if (!resourceForm.resourceName || !resourceForm.resourceType) {
       setError("Resource Name and Type are required");
       setLoading(false);
       return;
     }
 
     try {
-      const res = await axios.post("/resources", form);
+      const res = await axios.post("/resources", resourceForm);
       console.log("Resource created:", res.data);
-      handleCloseModal();
-      setForm({ resourceName: "", resourceType: "", description: "" });
+
+      // simpan id resource yg baru dibuat
+      setActiveResourceId(res.data.id);
+
+      // lanjut ke detail
+      setStep("detail");
 
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 2000);
@@ -53,10 +95,72 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
     }
   };
 
+  // Step 2: Simpan detail sementara
+  const handleDetailSubmit = (e) => {
+    if (e?.preventDefault) e.preventDefault();
+    // langsung lanjut ke step availability
+    setStep("availability");
+    setError("");
+  };
+
+  // Step 3: Add availability (sekalian jalankan detail)
+  const handleFinalSubmit = async (e) => {
+    if (e?.preventDefault) e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      // 1. Save detail
+      await axios.post(
+        `/resources/${activeResourceId}/detail`,
+        resourceDetailForm
+      );
+      console.log("✅ Resource detail created");
+
+      // 2. Save availability (perhatikan resourceId ikut dikirim di body)
+      await axios.post(`/availability`, {
+        ...availabilityForm,
+        resourceId: activeResourceId,
+      });
+      console.log("✅ Availability created");
+
+      // sukses semua
+      handleCloseModal();
+      setStep("resource");
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 2000);
+    } catch (err) {
+      console.error("❌ Error", err.response?.data || err.message);
+      setError(
+        err.response?.data?.error || "Failed to save detail or availability"
+      );
+      setShowError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCloseModal = () => {
-    setForm({ resourceName: "", resourceType: "", description: "" });
+    setResourceForm({ resourceName: "", resourceType: "", description: "" });
+    setResourceDetailForm({
+      location: "",
+      capacity: "",
+      facilities: "",
+      floor: "",
+      pricePerHour: "",
+    });
+    setAvailabilityForm({
+      dayOfWeek: "",
+      startTime: "",
+      endTime: "",
+      startDate: "",
+      endDate: "",
+      isActive: true,
+    });
+    setActiveResourceId(null);
     setVisible(false);
     setTimeout(() => setShowModal(false), 10);
+    setStep("resource");
   };
 
   useEffect(() => {
@@ -74,7 +178,6 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
         console.error("Failed to fetch resources:", err);
       }
     };
-
     fetchResources();
   }, []);
 
@@ -94,6 +197,13 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
               resources.some((r) => r.resourceType === type) ? (
                 <button
                   key={type}
+                  onClick={() => {
+                    setStep("detail");
+                    setActiveResourceId(
+                      resources.find((r) => r.resourceType === type)?.id || null
+                    );
+                    setShowModal(true);
+                  }}
                   className="linear rounded-[20px] bg-brand-900 px-4 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90"
                 >
                   Add New {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -104,29 +214,21 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
         )}
       </div>
 
-      {/* {resources.length !== 0 && (
-        <div className="my-48 flex justify-center">
-          <button
-            className="linear rounded-[20px] bg-brand-900 px-4 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90"
-            onClick={() => setShowModal(true)}
-          >
-            Create Resource
-          </button>
-        </div>
-      )} */}
-
       {resources.length === 0 && (
         <div className="my-48 flex justify-center">
           <button
             className="linear rounded-[20px] bg-brand-900 px-4 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90"
-            onClick={() => setShowModal(true)}
+            onClick={() => {
+              setStep("resource");
+              setShowModal(true);
+            }}
           >
             Create Resource
           </button>
         </div>
       )}
 
-      {/* Modal Create Resource */}
+      {/* Modal Create Resource / Detail / Availability */}
       {showModal && (
         <div className="bg-black/50 fixed inset-0 z-10 flex items-center justify-center">
           <div
@@ -136,19 +238,44 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
               } w-full max-w-3xl`}
           >
             <h3 className="mb-4 text-2xl font-bold text-navy-700 dark:text-white">
-              Create Resource
+              {step === "resource"
+                ? "Create Resource"
+                : step === "detail"
+                ? "Add Resource Detail"
+                : "Set Availability"}
             </h3>
 
             {error && <p className="mb-2 text-sm text-red-500">{error}</p>}
 
-            {/* ResourceForm terbaru dengan dropdown */}
-            <ResourceForm
-              form={form}
-              onChange={handleChange}
-              onSubmit={handleSubmit}
-              onCancel={handleCloseModal}
-              loading={loading}
-            />
+            {step === "resource" && (
+              <ResourceForm
+                form={resourceForm}
+                onChange={handleResourceChange}
+                onSubmit={handleResourceSubmit}
+                onCancel={handleCloseModal}
+                loading={loading}
+              />
+            )}
+
+            {step === "detail" && (
+              <ResourceDetailForm
+                formData={resourceDetailForm}
+                onChange={handleDetailChange}
+                onSubmit={handleDetailSubmit}
+                onCancel={handleCloseModal}
+                loading={loading}
+              />
+            )}
+
+            {step === "availability" && (
+              <SlotsAvailabilityForm
+                formData={availabilityForm}
+                onChange={handleAvailabilityChange}
+                onSubmit={handleFinalSubmit}
+                onCancel={handleCloseModal}
+                loading={loading}
+              />
+            )}
           </div>
         </div>
       )}
@@ -157,7 +284,7 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
       {showSuccess && (
         <PopUpNotification
           type="success"
-          message="Resource created successfully!"
+          message="Action completed successfully!"
           onClose={() => setShowSuccess(false)}
         />
       )}
