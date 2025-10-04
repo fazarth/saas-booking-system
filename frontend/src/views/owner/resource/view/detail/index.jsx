@@ -25,9 +25,11 @@ const ResourceDetail = () => {
   const [isEditModal, setIsEditModal] = useState(false);
   const [editVisible, setEditVisible] = useState(false);
   const [editForm, setEditForm] = useState({
-    resourceName: "",
-    resourceType: "",
-    description: "",
+    location: "",
+    capacity: "",
+    facilities: "",
+    floor: "",
+    pricePerHour: "",
   });
   const [editLoading, setEditLoading] = useState(false);
 
@@ -36,13 +38,13 @@ const ResourceDetail = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const resResource = await axios.get(`/resources/${resourceId}/all`);
-        setResource(resResource.data[0]);
+        const resResource = await axios.get(`/resources/${resourceId}/detail`);
+        setResource(resResource.data);
 
         const resSlots = await axios.get(
           `/availability/resource/${resourceId}`
         );
-        setSlots(resSlots.data[0] || null);
+        setSlots(resSlots.data || null);
 
         setError(null);
       } catch (err) {
@@ -87,9 +89,11 @@ const ResourceDetail = () => {
   const handleOpenEdit = () => {
     if (!resource) return;
     setEditForm({
-      resourceName: resource.resourceName,
-      resourceType: resource.resourceType,
-      description: resource.description || "",
+      location: resource.location,
+      capacity: resource.capacity,
+      facilities: resource.facilities,
+      floor: resource.floor,
+      pricePerHour: resource.pricePerHour,
     });
     setIsEditModal(true);
   };
@@ -100,14 +104,20 @@ const ResourceDetail = () => {
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-    if (!editForm.resourceName || !editForm.resourceType) {
-      setNotification({ type: "error", message: "Name and Type are required" });
+    if (!editForm.location || !editForm.capacity) {
+      setNotification({
+        type: "error",
+        message: "Location and Capacity are required",
+      });
       return;
     }
 
     try {
       setEditLoading(true);
-      const res = await axios.put(`/resources/${resourceId}`, editForm);
+      const res = await axios.put(
+        `/resources/${resource.resourceId}`,
+        editForm
+      );
       setResource(res.data);
       setEditVisible(false);
       setTimeout(() => setIsEditModal(false), 300);
@@ -127,7 +137,7 @@ const ResourceDetail = () => {
 
   const handleDelete = async () => {
     try {
-      const res = await axios.delete(`/resources/${resourceId}`);
+      const res = await axios.delete(`/resources/${resourceId}/detail`);
       setConfirmVisible(false);
       setTimeout(() => setIsConfirmPopup(false), 300);
       setNotification({ type: "success", message: res.data.message });
