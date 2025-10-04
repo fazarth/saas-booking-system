@@ -65,7 +65,7 @@ const ResourceDetailForm = ({
 
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          Price per Hour
+          Price
         </label>
         <input
           type="number"
