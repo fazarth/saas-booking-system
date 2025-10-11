@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 const ResourceCard = ({
   id,
+  resourceId,
   title,
   description,
   type,
@@ -15,10 +16,9 @@ const ResourceCard = ({
   const navigate = useNavigate();
 
   const [heart, setHeart] = useState(true);
-  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleDetailClick = () => {
-    navigate(`/owner/resources/${id}`);
+    navigate(`/owner/resources/${resourceId}`);
   };
 
   return (

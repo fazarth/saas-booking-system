@@ -8,7 +8,7 @@ import PopUpNotification from "components/popup/PopUpNotification";
 import ResourceDetailForm from "../../components/form/ResourceDetailForm";
 
 const ResourceDetail = () => {
-  const { id: resourceId } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const [resource, setResource] = useState(null);
@@ -33,17 +33,19 @@ const ResourceDetail = () => {
   });
   const [editLoading, setEditLoading] = useState(false);
 
-  // Fetch resource + availability
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const resResource = await axios.get(`/resources/${resourceId}/detail`);
-        setResource(resResource.data);
+        const resResource = await axios.get(`/resources/${id}/all`);
+        console.log("Response resource:", resResource.data);
+        const data = Array.isArray(resResource.data)
+          ? resResource.data[0]
+          : resResource.data;
 
-        const resSlots = await axios.get(
-          `/availability/resource/${resourceId}`
-        );
+        setResource(data);
+
+        const resSlots = await axios.get(`/availability/resource/${id}`);
         setSlots(resSlots.data || null);
 
         setError(null);
@@ -57,7 +59,7 @@ const ResourceDetail = () => {
     };
 
     fetchData();
-  }, [resourceId]);
+  }, [id]);
 
   useEffect(() => {
     if (resource) {
@@ -86,14 +88,13 @@ const ResourceDetail = () => {
   }, [isConfirmPopup]);
 
   // Handlers
-  const handleOpenEdit = () => {
-    if (!resource) return;
+  const handleOpenEdit = (item) => {
     setEditForm({
-      location: resource.location,
-      capacity: resource.capacity,
-      facilities: resource.facilities,
-      floor: resource.floor,
-      pricePerHour: resource.pricePerHour,
+      location: item.location,
+      capacity: item.capacity,
+      facilities: item.facilities,
+      floor: item.floor,
+      pricePerHour: item.pricePerHour,
     });
     setIsEditModal(true);
   };
@@ -114,10 +115,7 @@ const ResourceDetail = () => {
 
     try {
       setEditLoading(true);
-      const res = await axios.put(
-        `/resources/${resource.resourceId}`,
-        editForm
-      );
+      const res = await axios.put(`/resources/${id}`, editForm);
       setResource(res.data);
       setEditVisible(false);
       setTimeout(() => setIsEditModal(false), 300);
@@ -137,7 +135,7 @@ const ResourceDetail = () => {
 
   const handleDelete = async () => {
     try {
-      const res = await axios.delete(`/resources/${resourceId}/detail`);
+      const res = await axios.delete(`/resources/${id}/detail`);
       setConfirmVisible(false);
       setTimeout(() => setIsConfirmPopup(false), 300);
       setNotification({ type: "success", message: res.data.message });
@@ -157,17 +155,14 @@ const ResourceDetail = () => {
     <div className="p-6">
       {resource ? (
         <div className="rounded-lg bg-white p-6 shadow-md">
-          {/* Title */}
           <h1 className="text-2xl font-bold">{resource.location}</h1>
 
-          {/* Image */}
           <img
             src={NFt}
             alt={resource.location}
             className="mb-4 w-full rounded-lg"
           />
 
-          {/* Room Details */}
           <div className="mt-2 space-y-1 text-gray-600">
             <p>
               <span className="font-semibold">Capacity:</span>{" "}
@@ -186,7 +181,6 @@ const ResourceDetail = () => {
             </p>
           </div>
 
-          {/* Availability Slot */}
           <div className="mt-4">
             <h3 className="font-semibold text-gray-700">Available Slot:</h3>
             {!slots || Object.keys(slots).length === 0 ? (
@@ -204,10 +198,9 @@ const ResourceDetail = () => {
             )}
           </div>
 
-          {/* Action Buttons */}
           <div className="mt-6 flex justify-end gap-4">
             <button
-              onClick={handleOpenEdit}
+              onClick={() => handleOpenEdit(resource)}
               className="linear rounded-[20px] bg-brand-900 px-4 py-2 text-base font-medium text-white"
             >
               Edit

@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "api/axios";
 import ResourceCard from "components/card/ResourceCard";
 import NFt from "assets/img/nfts/Nft3.png";
-
 import { jwtDecode } from "jwt-decode";
 
 const ResourceList = ({ refresh }) => {
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchResources = async () => {
@@ -24,7 +25,6 @@ const ResourceList = ({ refresh }) => {
 
         const decoded = jwtDecode(token);
         const ownerId = decoded.id || decoded.userId;
-        console.log("OwnerId dari token:", ownerId);
 
         const res = await axios.get(`/resources`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -40,17 +40,15 @@ const ResourceList = ({ refresh }) => {
               headers: { Authorization: `Bearer ${token}` },
             });
 
-            // hasil dari API bisa array, jadi pastikan selalu array
             const detailArray = Array.isArray(detailRes.data)
               ? detailRes.data
               : [detailRes.data];
 
-            // gabungkan setiap detail dengan resource utama
             return detailArray.map((d) => ({ ...r, ...d }));
           })
         );
 
-        // flatten array of arrays → jadi array 1D
+        // Flatten array hasil Promise.all
         setResources(details.flat());
       } catch (err) {
         console.error("Error fetching resources:", err);
@@ -76,18 +74,22 @@ const ResourceList = ({ refresh }) => {
       </div>
 
       <div className="z-20 grid grid-cols-1 gap-5 md:grid-cols-3">
-        {resources.map((detail) => (
-          <ResourceCard
-            key={detail.id}
-            id={detail.resourceId}
-            title={`${detail.resourceName} @ ${detail.location || "N/A"}`}
-            description={`Capacity: ${detail.capacity || "-"}, Facilities: ${
-              detail.facilities || "-"
-            }`}
-            type="Room"
-            isActive={true}
-            image={NFt}
-          />
+        {resources.map((item) => (
+          <div
+            key={item.id}
+            onClick={() => navigate(`/owner/resources/${item.id}`)}
+            className="cursor-pointer"
+          >
+            <ResourceCard
+              id={item.id}
+              resourceId={item.resourceId}
+              title={item.location}
+              description={item.facilities}
+              type={item.floor}
+              isActive={true}
+              image={NFt}
+            />
+          </div>
         ))}
       </div>
     </>
