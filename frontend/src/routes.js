@@ -13,6 +13,7 @@ import DataTables from "views/admin/tables";
 
 // Auth Imports
 import Login from "views/auth/Login";
+import Register from "views/auth/Register";
 
 // Icon Imports
 import {
@@ -125,6 +126,27 @@ const routes = [
     path: "login",
     icon: <MdLock className="h-6 w-6" />,
     component: <Login />,
+  },
+  {
+    name: "Admin Register",
+    layout: "/auth",
+    path: "admin/register",
+    icon: <MdLock className="h-6 w-6" />,
+    component: <Register />,
+  },
+  {
+    name: "Owner Register",
+    layout: "/auth",
+    path: "owner/register",
+    icon: <MdLock className="h-6 w-6" />,
+    component: <Register />,
+  },
+  {
+    name: "Customer Register",
+    layout: "/auth",
+    path: "register",
+    icon: <MdLock className="h-6 w-6" />,
+    component: <Register />,
   },
 ];
 
