@@ -25,7 +25,8 @@ module.exports = {
     if (!resource) return res.status(404).json({ error: 'Resource not found or not owned by user' });
     const model = detailModelMap[resource.resourceType];
     if (!model) return res.status(400).json({ error: 'Invalid resourceType' });
-    const detail = await model.findOne({ where: { resourceId } });
+    const { id } = req.params;
+    const detail = await model.findOne({ where: { resourceId, id } });
     if (!detail) return res.status(404).json({ error: 'Detail not found' });
     res.json(detail);
   },
