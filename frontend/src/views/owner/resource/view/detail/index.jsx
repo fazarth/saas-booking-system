@@ -8,7 +8,7 @@ import PopUpNotification from "components/popup/PopUpNotification";
 import ResourceDetailForm from "../../components/form/ResourceDetailForm";
 
 const ResourceDetail = () => {
-  const { id } = useParams();
+  const { resourceId, id } = useParams();
   const navigate = useNavigate();
 
   const [resource, setResource] = useState(null);
@@ -37,7 +37,9 @@ const ResourceDetail = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const resResource = await axios.get(`/resources/${id}/all`);
+        const resResource = await axios.get(
+          `/resources/${resourceId}/detail/${id}`
+        );
         console.log("Response resource:", resResource.data);
         const data = Array.isArray(resResource.data)
           ? resResource.data[0]
@@ -59,7 +61,7 @@ const ResourceDetail = () => {
     };
 
     fetchData();
-  }, [id]);
+  }, [resourceId, id]);
 
   useEffect(() => {
     if (resource) {

@@ -75,11 +75,7 @@ const ResourceList = ({ refresh }) => {
 
       <div className="z-20 grid grid-cols-1 gap-5 md:grid-cols-3">
         {resources.map((item) => (
-          <div
-            key={item.id}
-            onClick={() => navigate(`/owner/resources/${item.id}`)}
-            className="cursor-pointer"
-          >
+          <div key={item.id} className="cursor-pointer">
             <ResourceCard
               id={item.id}
               resourceId={item.resourceId}

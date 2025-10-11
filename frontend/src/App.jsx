@@ -44,7 +44,10 @@ const App = () => {
             </ProtectedOwnerWithResource>
           }
         />
-        <Route path="resources/:id" element={<ResourceDetail />} />
+        <Route
+          path="resources/:resourceId/detail/:id"
+          element={<ResourceDetail />}
+        />
       </Route>
 
       {/* Customer protected */}

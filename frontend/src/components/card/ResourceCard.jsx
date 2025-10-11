@@ -18,7 +18,7 @@ const ResourceCard = ({
   const [heart, setHeart] = useState(true);
 
   const handleDetailClick = () => {
-    navigate(`/owner/resources/${resourceId}`);
+    navigate(`/owner/resources/${resourceId}/detail/${id}`);
   };
 
   return (
