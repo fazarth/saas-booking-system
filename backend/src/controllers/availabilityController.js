@@ -13,11 +13,10 @@ module.exports = {
     const userId = req.user.id;
     const { resourceId, resourceDetailId, resourceDetailType, dayOfWeek, startTime, endTime, startDate, endDate, isActive } = req.body;
     const model = detailModelMap[resourceDetailType];
-    if (!model) return res.status(400).json({ error: 'Invalid resourceDetailType' });
+    if (!model) return errorResponse(res, 400, 'invalid_resource_detail_type', req.query.lang || 'id');
 
-    // Pastikan detail milik resource dan owner
     const detail = await model.findOne({ where: { Id: resourceDetailId, ResourceId: resourceId } });
-    if (!detail) return res.status(404).json({ error: 'Resource detail not found or not owned by user' });
+    if (!detail) return errorResponse(res, 404, 'resource_not_found', req.query.lang || 'id');
 
     const slot = await AvailabilitySlot.create({
       ResourceId: resourceId,
