@@ -4,13 +4,13 @@ const bookingController = require('../controllers/bookingController');
 const auth = require('../middlewares/auth');
 const isCustomer = require('../middlewares/isCustomer');
 
-// Cek ketersediaan slot
+// Cek ketersediaan slot detail
 router.post('/check', auth, isCustomer, bookingController.checkAvailability);
-// Booking slot
+// Booking slot detail
 router.post('/', auth, isCustomer, bookingController.createBooking);
 // Lihat booking user
 router.get('/my', auth, bookingController.getMyBookings);
-// Lihat booking resource
-router.get('/resource/:resourceId', auth, bookingController.getResourceBookings);
+// Lihat booking berdasarkan resource detail
+router.get('/:resourceId/:resourceDetailId', auth, bookingController.getBookingsByResourceDetail);
 
 module.exports = router;
