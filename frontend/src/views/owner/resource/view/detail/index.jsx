@@ -117,7 +117,7 @@ const ResourceDetail = () => {
 
     try {
       setEditLoading(true);
-      const res = await axios.put(`/resources/${id}`, editForm);
+      const res = await axios.put(`/resources/${resourceId}/${id}`, editForm);
       setResource(res.data);
       setEditVisible(false);
       setTimeout(() => setIsEditModal(false), 300);
@@ -137,7 +137,7 @@ const ResourceDetail = () => {
 
   const handleDelete = async () => {
     try {
-      const res = await axios.delete(`/resources/${id}/detail`);
+      const res = await axios.delete(`/resources/${resourceId}/${id}`);
       setConfirmVisible(false);
       setTimeout(() => setIsConfirmPopup(false), 300);
       setNotification({ type: "success", message: res.data.message });
@@ -157,7 +157,7 @@ const ResourceDetail = () => {
     <div className="p-6">
       {resource ? (
         <div className="rounded-lg bg-white p-6 shadow-md">
-          <h1 className="text-2xl font-bold">{resource.location}</h1>
+          <h1 className="pb-6 text-2xl font-bold">{resource.location}</h1>
 
           <img
             src={NFt}
@@ -165,7 +165,7 @@ const ResourceDetail = () => {
             className="mb-4 w-full rounded-lg"
           />
 
-          <div className="mt-2 space-y-1 text-gray-600">
+          <div className="text-black-600 mt-2 space-y-1">
             <p>
               <span className="font-semibold">Capacity:</span>{" "}
               {resource.capacity}
@@ -184,11 +184,11 @@ const ResourceDetail = () => {
           </div>
 
           <div className="mt-4">
-            <h3 className="font-semibold text-gray-700">Available Slot:</h3>
+            <h3 className="text-black-700 font-semibold">Available Slot:</h3>
             {!slots || Object.keys(slots).length === 0 ? (
-              <p className="text-gray-500">No available slot</p>
+              <p className="text-black-500">No available slot</p>
             ) : (
-              <div className="text-gray-600">
+              <div className="text-black-600">
                 <p>
                   <span className="font-semibold">Day:</span> {slots.dayOfWeek}
                 </p>
