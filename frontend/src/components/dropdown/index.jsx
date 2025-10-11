@@ -1,29 +1,30 @@
-import React from "react";
+import { useState, useRef, useEffect } from "react";
 
-// Hapus seluruh hook useOutsideAlerter dari sini
-const Dropdown = (props) => {
-  const {
-    button,
-    children,
-    classNames,
-    animation,
-    openWrapper, // Hanya butuh prop ini untuk mengontrol tampilan
-  } = props;
+const Dropdown = ({ button, children, classNames, animation }) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef();
 
-  // Hapus juga wrapperRef dan panggilannya
-  // Hapus useOutsideAlerter(wrapperRef, setOpenWrapper);
+  useEffect(() => {
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   return (
-    <div className="relative flex w-full">
-      {" "}
-      {/* Hapus ref={wrapperRef} */}
-      <div className="flex w-full">{button}</div>
+    <div className="relative flex w-full" ref={ref}>
+      <div className="flex w-full" onClick={() => setOpen(!open)}>
+        {button}
+      </div>
       <div
         className={`${classNames} absolute z-20 ${
           animation
             ? animation
             : "origin-top-right transition-all duration-300 ease-in-out"
-        } ${openWrapper ? "scale-100" : "scale-0"}`}
+        } ${open ? "scale-100" : "scale-0"}`}
       >
         {children}
       </div>

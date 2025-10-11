@@ -110,25 +110,23 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
     setError("");
 
     try {
-      // 1. Save detail
       await axios.post(
         `/resources/${activeResourceId}/detail`,
         resourceDetailForm
       );
       console.log("✅ Resource detail created");
 
-      // 2. Save availability (perhatikan resourceId ikut dikirim di body)
       await axios.post(`/availability`, {
         ...availabilityForm,
         resourceId: activeResourceId,
       });
       console.log("✅ Availability created");
 
-      // sukses semua
       handleCloseModal();
       setStep("resource");
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 2000);
+      onCreateSuccess?.();
     } catch (err) {
       console.error("❌ Error", err.response?.data || err.message);
       setError(
