@@ -168,7 +168,7 @@ export default function Login() {
             Not registered yet?
           </span>
           <a
-            href="/register"
+            href="register"
             className="ml-1 text-sm font-medium text-brand-500 hover:text-brand-600 dark:text-white"
           >
             Create an account
