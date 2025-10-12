@@ -6,8 +6,11 @@ import { useNavigate } from "react-router-dom";
 import PopUpNotification from "components/popup/PopUpNotification";
 
 export default function Register() {
+  const [fullname, setFullname] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,9 +34,9 @@ export default function Register() {
       component: <Register />,
     },
     {
-      name: "Customer Register",
+      name: "Register",
       layout: "/auth",
-      path: "user/register",
+      path: "register",
       component: <Register />,
     },
   ];
@@ -43,6 +46,13 @@ export default function Register() {
       location.pathname.includes(route.path)
     );
     return currentRoute ? currentRoute.name : "Register";
+  };
+
+  const getRoleType = () => {
+    if (location.pathname.endsWith("admin/register")) return "admin";
+    if (location.pathname.endsWith("owner/register")) return "owner";
+    if (location.pathname.endsWith("/register")) return "customer";
+    return "customer";
   };
 
   const ShowSuccess = (message) => {
@@ -64,13 +74,24 @@ export default function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    if (!username || !email || !password) {
-      ShowError("Username, Email, dan Password wajib diisi!");
+    if (!fullname || !email || !username || !password) {
+      ShowError("Fullname, Username, Email, dan Password wajib diisi!");
       return;
     }
 
+    setIsSubmitting(true);
+    const role = getRoleType();
+
     try {
-      const res = await axios.post("/register", { username, email, password });
+      const res = await axios.post("/register", {
+        fullname,
+        username,
+        email,
+        phoneNumber,
+        address,
+        password,
+        roleType: role,
+      });
 
       if (res.status === 201 || res.status === 200) {
         ShowSuccess("Akun berhasil dibuat! Silakan login.");
@@ -84,13 +105,14 @@ export default function Register() {
       } else {
         ShowError("Gagal Register! Silakan coba lagi.");
       }
+    } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="mb-16 mt-16 flex h-full w-full items-start justify-start px-4 md:px-16 lg:px-16">
-      <div className="mt-[10vh] w-full max-w-[420px] flex-col items-start">
+    <div className="mb-16 flex h-full w-full items-start justify-start px-4 md:px-16 lg:px-16">
+      <div className="mt-[4vh] w-full max-w-[420px] flex-col items-start">
         <h4 className="mb-2.5 text-4xl font-bold text-navy-700 dark:text-white">
           {getRouteName()}
         </h4>
@@ -99,6 +121,17 @@ export default function Register() {
         </p>
 
         <form onSubmit={handleRegister}>
+          <InputField
+            variant="auth"
+            extra="mb-3"
+            label="Full Name"
+            placeholder="Full Name"
+            id="fullname"
+            type="text"
+            value={fullname}
+            onChange={(e) => setFullname(e.target.value)}
+          />
+
           <InputField
             variant="auth"
             extra="mb-3"
@@ -119,6 +152,28 @@ export default function Register() {
             type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+          />
+
+          <InputField
+            variant="auth"
+            extra="mb-3"
+            label="Phone Number"
+            placeholder="081234567890"
+            id="phoneNumber"
+            type="text"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+          />
+
+          <InputField
+            variant="auth"
+            extra="mb-3"
+            label="Address"
+            placeholder="Jalan Merdeka, Jakarta"
+            id="address"
+            type="text"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
           />
 
           <InputField

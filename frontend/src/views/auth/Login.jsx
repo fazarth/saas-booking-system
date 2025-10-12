@@ -137,7 +137,7 @@ export default function Login() {
             variant="auth"
             extra="mb-3"
             label="Username"
-            // placeholder="mail@example.com"
+            placeholder="Username"
             id="username"
             type="text"
             value={username}
