@@ -5,7 +5,10 @@ import axios from "api/axios";
 import NFt from "assets/img/nfts/Nft3.png";
 import PopUpConfirmation from "components/popup/PopUpConfirmation";
 import PopUpNotification from "components/popup/PopUpNotification";
-import ResourceDetailForm from "../../components/form/ResourceRoomDetailForm";
+import ResourceCourseDetailForm from "../../components/form/ResourceCourseDetailForm";
+import ResourceHealthDetailForm from "../../components/form/ResourceHealthDetailForm";
+import ResourceRoomDetailForm from "../../components/form/ResourceRoomDetailForm";
+import ResourceVehicleDetailForm from "../../components/form/ResourceVehicleDetailForm";
 
 const ResourceDetail = () => {
   const { resourceId, id } = useParams();
@@ -15,23 +18,57 @@ const ResourceDetail = () => {
   const [slots, setSlots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [resourceType, setResourceType] = useState(null);
+  const [editForm, setEditForm] = useState({});
 
   // Popups & notifications
   const [isConfirmPopup, setIsConfirmPopup] = useState(false);
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [notification, setNotification] = useState(null);
   const [notificationVisible, setNotificationVisible] = useState(false);
-
   const [isEditModal, setIsEditModal] = useState(false);
   const [editVisible, setEditVisible] = useState(false);
-  const [editForm, setEditForm] = useState({
-    location: "",
-    capacity: "",
-    facilities: "",
-    floor: "",
-    pricePerHour: "",
-  });
   const [editLoading, setEditLoading] = useState(false);
+
+  const detailFormsMap = {
+    course: ResourceCourseDetailForm,
+    health: ResourceHealthDetailForm,
+    room: ResourceRoomDetailForm,
+    vehicle: ResourceVehicleDetailForm,
+  };
+
+  const DetailFormComponent = detailFormsMap[resourceType];
+
+  const initialDetailForms = {
+    course: {
+      subject: "",
+      level: "",
+      durationPerHours: "",
+      fee: "",
+      courseType: "",
+    },
+    health: {
+      specialization: "",
+      clinicAddress: "",
+      fee: "",
+      durationMin: "",
+    },
+    room: {
+      location: "",
+      capacity: "",
+      facilities: "",
+      floor: "",
+      pricePerHour: "",
+    },
+    vehicle: {
+      brand: "",
+      model: "",
+      year: "",
+      type: "",
+      rentalPrice: "",
+      img: "",
+    },
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,6 +83,8 @@ const ResourceDetail = () => {
           : resResource.data;
 
         setResource(data);
+        setResourceType(data.resourceType);
+        setEditForm(initialDetailForms[data.resourceType]);
 
         const resSlots = await axios.get(`/availability/resource/${id}`);
         setSlots(resSlots.data || null);
@@ -91,13 +130,8 @@ const ResourceDetail = () => {
 
   // Handlers
   const handleOpenEdit = (item) => {
-    setEditForm({
-      location: item.location,
-      capacity: item.capacity,
-      facilities: item.facilities,
-      floor: item.floor,
-      pricePerHour: item.pricePerHour,
-    });
+    setResourceType(item.resourceType);
+    setEditForm({ ...initialDetailForms[item.resourceType], ...item });
     setIsEditModal(true);
   };
 
@@ -107,10 +141,22 @@ const ResourceDetail = () => {
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-    if (!editForm.location || !editForm.capacity) {
+    const requiredFieldsMap = {
+      course: ["subject", "level"],
+      health: ["specialization", "clinicAddress"],
+      room: ["location", "capacity"],
+      vehicle: ["brand", "model"],
+    };
+
+    const requiredFields = requiredFieldsMap[resourceType] || [];
+    const missingFields = requiredFields.filter(
+      (f) => editForm[f] === undefined || editForm[f] === ""
+    );
+
+    if (missingFields.length > 0) {
       setNotification({
         type: "error",
-        message: "Location and Capacity are required",
+        message: `Field ${missingFields.join(", ")} is required`,
       });
       return;
     }
@@ -185,18 +231,20 @@ const ResourceDetail = () => {
 
           <div className="mt-4">
             <h3 className="text-black-700 font-semibold">Available Slot:</h3>
-            {!slots || Object.keys(slots).length === 0 ? (
+            {!slots || slots.length === 0 ? (
               <p className="text-black-500">No available slot</p>
             ) : (
-              <div className="text-black-600">
-                <p>
-                  <span className="font-semibold">Day:</span> {slots.dayOfWeek}
-                </p>
-                <p>
-                  <span className="font-semibold">Time:</span> {slots.startTime}{" "}
-                  - {slots.endTime}
-                </p>
-              </div>
+              slots.map((slot) => (
+                <div key={slot.id} className="text-black-600">
+                  <p>
+                    <span className="font-semibold">Day:</span> {slot.dayOfWeek}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Time:</span>{" "}
+                    {slot.startTime} - {slot.endTime}
+                  </p>
+                </div>
+              ))
             )}
           </div>
 
@@ -243,13 +291,15 @@ const ResourceDetail = () => {
         >
           <div className="w-full max-w-3xl transform rounded-xl border border-gray-300 bg-white p-6 shadow-lg">
             <h3 className="mb-4 text-2xl font-bold">Edit Resource</h3>
-            <ResourceDetailForm
-              formData={editForm}
-              onChange={handleEditChange}
-              onSubmit={handleEditSubmit}
-              onCancel={() => setIsEditModal(false)}
-              loading={editLoading}
-            />
+            {DetailFormComponent && (
+              <DetailFormComponent
+                formData={editForm}
+                onChange={handleEditChange}
+                onSubmit={handleEditSubmit}
+                onCancel={() => setIsEditModal(false)}
+                loading={editLoading}
+              />
+            )}
           </div>
         </div>
       )}

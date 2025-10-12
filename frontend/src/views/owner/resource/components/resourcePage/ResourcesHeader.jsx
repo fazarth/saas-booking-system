@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "api/axios";
 import PopUpNotification from "components/popup/PopUpNotification";
 import ResourceForm from "../form/ResourceForm";
-import ResourceDetailForm from "../form/ResourceRoomDetailForm";
+import ResourceCourseDetailForm from "../form/ResourceCourseDetailForm";
+import ResourceHealthDetailForm from "../form/ResourceHealthDetailForm";
+import ResourceRoomDetailForm from "../form/ResourceRoomDetailForm";
+import ResourceVehicleDetailForm from "../form/ResourceVehicleDetailForm";
 import SlotsAvailabilityForm from "../form/SlotsAvailabilityForm";
 
 const ResourcesHeader = ({ onCreateSuccess }) => {
@@ -20,13 +23,40 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
     description: "",
   });
 
-  const [resourceDetailForm, setResourceDetailForm] = useState({
-    location: "",
-    capacity: "",
-    facilities: "",
-    floor: "",
-    pricePerHour: "",
-  });
+  const initialDetailForms = {
+    course: {
+      subject: "",
+      level: "",
+      durationPerHours: "",
+      fee: "",
+      courseType: "",
+    },
+    health: {
+      specialization: "",
+      clinicAddress: "",
+      fee: "",
+      durationMin: "",
+    },
+    room: {
+      location: "",
+      capacity: "",
+      facilities: "",
+      floor: "",
+      pricePerHour: "",
+    },
+    vehicle: {
+      brand: "",
+      model: "",
+      year: "",
+      type: "",
+      rentalPrice: "",
+      img: "",
+    },
+  };
+
+  const [resourceDetailForm, setResourceDetailForm] = useState(
+    initialDetailForms[resourceForm.resourceType || "room"]
+  );
 
   const [availabilityForm, setAvailabilityForm] = useState({
     dayOfWeek: "",
@@ -98,7 +128,6 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
   // Step 2: Simpan detail sementara
   const handleDetailSubmit = (e) => {
     if (e?.preventDefault) e.preventDefault();
-    // langsung lanjut ke step availability
     setStep("availability");
     setError("");
   };
@@ -110,10 +139,10 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
     setError("");
 
     try {
-      await axios.post(
-        `/resources/${activeResourceId}/detail`,
-        resourceDetailForm
-      );
+      const res = await axios.post(`/resources/${activeResourceId}/detail`, {
+        ...resourceDetailForm,
+        resourceType: resourceForm.resourceType,
+      });
       console.log("✅ Resource detail created");
 
       await axios.post(`/availability`, {
@@ -123,6 +152,11 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
       console.log("✅ Availability created");
 
       handleCloseModal();
+      setResourceDetailForm(initialDetailForms[resourceForm.resourceType]);
+      setResourceForm({
+        ...resourceForm,
+        resourceType: resourceForm.resourceType,
+      });
       setStep("resource");
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 2000);
@@ -134,7 +168,9 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
       );
       setShowError(true);
     } finally {
+      setError("");
       setLoading(false);
+      setResourceDetailForm(initialDetailForms[resourceForm.resourceType]);
     }
   };
 
@@ -200,6 +236,8 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
                     setActiveResourceId(
                       resources.find((r) => r.resourceType === type)?.id || null
                     );
+                    setResourceForm({ ...resourceForm, resourceType: type });
+                    setResourceDetailForm(initialDetailForms[type]);
                     setShowModal(true);
                   }}
                   className="linear rounded-[20px] bg-brand-900 px-4 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90"
@@ -256,13 +294,45 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
             )}
 
             {step === "detail" && (
-              <ResourceDetailForm
-                formData={resourceDetailForm}
-                onChange={handleDetailChange}
-                onSubmit={handleDetailSubmit}
-                onCancel={handleCloseModal}
-                loading={loading}
-              />
+              <>
+                {resourceForm.resourceType === "course" && (
+                  <ResourceCourseDetailForm
+                    formData={resourceDetailForm}
+                    onChange={handleDetailChange}
+                    onSubmit={handleDetailSubmit}
+                    onCancel={handleCloseModal}
+                    loading={loading}
+                  />
+                )}
+
+                {resourceForm.resourceType === "health" && (
+                  <ResourceHealthDetailForm
+                    formData={resourceDetailForm}
+                    onChange={handleDetailChange}
+                    onSubmit={handleDetailSubmit}
+                    onCancel={handleCloseModal}
+                    loading={loading}
+                  />
+                )}
+                {resourceForm.resourceType === "room" && (
+                  <ResourceRoomDetailForm
+                    formData={resourceDetailForm}
+                    onChange={handleDetailChange}
+                    onSubmit={handleDetailSubmit}
+                    onCancel={handleCloseModal}
+                    loading={loading}
+                  />
+                )}
+                {resourceForm.resourceType === "vehicle" && (
+                  <ResourceVehicleDetailForm
+                    formData={resourceDetailForm}
+                    onChange={handleDetailChange}
+                    onSubmit={handleDetailSubmit}
+                    onCancel={handleCloseModal}
+                    loading={loading}
+                  />
+                )}
+              </>
             )}
 
             {step === "availability" && (

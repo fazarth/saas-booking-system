@@ -68,17 +68,15 @@ export default function Login() {
       localStorage.setItem("token", token);
       localStorage.setItem("id", id);
 
-      // Tentukan role
       let role = "";
-      if (location.pathname.includes("/auth/login")) {
-        role = "customer";
-      } else if (location.pathname.includes("/auth/admin/login")) {
+      if (location.pathname.includes("/auth/admin/login")) {
         role = "admin";
       } else if (location.pathname.includes("/auth/owner/login")) {
         role = "owner";
+      } else if (location.pathname.includes("/auth/login")) {
+        role = "customer";
       }
 
-      // Validasi role
       const validateRes = await axios.get(`/validate-${role}`, {
         headers: {
           Authorization: `Bearer ${token}`,
