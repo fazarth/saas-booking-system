@@ -43,7 +43,7 @@ module.exports = {
 
 // Sync function for migrations
 if (require.main === module) {
-  sequelize.sync({ alter: true }).then(() => {
+  sequelize.sync({ force: true }).then(() => {
     console.log("Database synced");
     process.exit();
   });
