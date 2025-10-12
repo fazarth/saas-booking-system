@@ -5,7 +5,7 @@ import axios from "api/axios";
 import NFt from "assets/img/nfts/Nft3.png";
 import PopUpConfirmation from "components/popup/PopUpConfirmation";
 import PopUpNotification from "components/popup/PopUpNotification";
-import ResourceDetailForm from "../../components/form/ResourceDetailForm";
+import ResourceDetailForm from "../../components/form/ResourceRoomDetailForm";
 
 const ResourceDetail = () => {
   const { resourceId, id } = useParams();

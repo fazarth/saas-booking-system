@@ -1,6 +1,6 @@
 import React from "react";
 
-const ResourceDetailForm = ({
+const ResourceHealthDetailForm = ({
   formData,
   onChange,
   onSubmit,
@@ -64,9 +64,7 @@ const ResourceDetailForm = ({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Price
-        </label>
+        <label className="block text-sm font-medium text-gray-700">Price</label>
         <input
           type="number"
           name="pricePerHour"
@@ -97,4 +95,4 @@ const ResourceDetailForm = ({
   );
 };
 
-export default ResourceDetailForm;
+export default ResourceHealthDetailForm;

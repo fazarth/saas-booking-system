@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "api/axios";
 import PopUpNotification from "components/popup/PopUpNotification";
 import ResourceForm from "../form/ResourceForm";
-import ResourceDetailForm from "../form/ResourceDetailForm";
+import ResourceDetailForm from "../form/ResourceRoomDetailForm";
 import SlotsAvailabilityForm from "../form/SlotsAvailabilityForm";
 
 const ResourcesHeader = ({ onCreateSuccess }) => {

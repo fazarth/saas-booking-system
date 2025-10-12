@@ -1,22 +1,28 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 
-const Dropdown = ({ button, children, classNames, animation }) => {
-  const [open, setOpen] = useState(false);
+const Dropdown = ({
+  button,
+  children,
+  classNames,
+  animation,
+  openWrapper,
+  setOpenWrapper,
+}) => {
   const ref = useRef();
 
   useEffect(() => {
     const handler = (e) => {
       if (ref.current && !ref.current.contains(e.target)) {
-        setOpen(false);
+        if (setOpenWrapper) setOpenWrapper(false);
       }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, []);
+  }, [setOpenWrapper]);
 
   return (
     <div className="relative flex w-full" ref={ref}>
-      <div className="flex w-full" onClick={() => setOpen(!open)}>
+      <div className="flex w-full" onClick={() => setOpenWrapper(!openWrapper)}>
         {button}
       </div>
       <div
@@ -24,7 +30,7 @@ const Dropdown = ({ button, children, classNames, animation }) => {
           animation
             ? animation
             : "origin-top-right transition-all duration-300 ease-in-out"
-        } ${open ? "scale-100" : "scale-0"}`}
+        } ${openWrapper ? "scale-100" : "scale-0"}`}
       >
         {children}
       </div>
