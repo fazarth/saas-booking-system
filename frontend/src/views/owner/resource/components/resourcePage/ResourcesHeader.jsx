@@ -143,13 +143,13 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
         ...resourceDetailForm,
         resourceType: resourceForm.resourceType,
       });
-      console.log("✅ Resource detail created");
 
       await axios.post(`/availability`, {
         ...availabilityForm,
         resourceId: activeResourceId,
+        resourceDetailId: res.data.id,
+        resourceDetailType: resourceForm.resourceType,
       });
-      console.log("✅ Availability created");
 
       handleCloseModal();
       setResourceDetailForm(initialDetailForms[resourceForm.resourceType]);
