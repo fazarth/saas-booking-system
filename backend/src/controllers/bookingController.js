@@ -1,19 +1,27 @@
-const { Booking, Resource } = require('../models');
+const { Booking, RoomDetail, HealthDetail, VehicleDetail, CourseDetail } = require('../models');
 const { Op } = require('sequelize');
+
+const detailModelMap = {
+  room: RoomDetail,
+  health: HealthDetail,
+  vehicle: VehicleDetail,
+  course: CourseDetail,
+};
 
 module.exports = {
   async checkAvailability(req, res) {
-    const { resourceId, startTime, endTime } = req.body;
-    // Cari booking aktif yang bentrok dengan waktu yang dipilih
+    const { resourceDetailType, resourceDetailId, startTime, endTime } = req.body;
+    const model = detailModelMap[resourceDetailType];
+    if (!model) return res.status(400).json({ error: 'Invalid resourceDetailType' });
+
+    // Cek booking bentrok
     const conflict = await Booking.findOne({
       where: {
-        resourceId,
-        status: 'booked',
+        ResourceDetailType: resourceDetailType,
+        ResourceDetailId: resourceDetailId,
+        Status: 'booked',
         [Op.or]: [
-          {
-            startTime: { [Op.lt]: endTime },
-            endTime: { [Op.gt]: startTime }
-          }
+          { StartTime: { [Op.lt]: endTime }, EndTime: { [Op.gt]: startTime } }
         ]
       }
     });
@@ -22,44 +30,59 @@ module.exports = {
 
   async createBooking(req, res) {
     const userId = req.user.id;
-    const { resourceId, startTime, endTime, notes } = req.body;
+    const { resourceId, resourceDetailType, resourceDetailId, startTime, endTime, notes } = req.body;
+    const model = detailModelMap[resourceDetailType];
+    if (!model) return res.status(400).json({ error: 'Invalid resourceDetailType' });
+
     // Cek bentrok
     const conflict = await Booking.findOne({
       where: {
-        resourceId,
-        status: 'booked',
+        ResourceDetailType: resourceDetailType,
+        ResourceDetailId: resourceDetailId,
+        Status: 'booked',
         [Op.or]: [
-          {
-            startTime: { [Op.lt]: endTime },
-            endTime: { [Op.gt]: startTime }
-          }
+          { StartTime: { [Op.lt]: endTime }, EndTime: { [Op.gt]: startTime } }
         ]
       }
     });
     if (conflict) return res.status(409).json({ error: 'Slot already booked' });
-    // Generate bookingCode sederhana
+
     const bookingCode = 'BOOK-' + Date.now();
     const booking = await Booking.create({
-      userId,
-      resourceId,
-      startTime,
-      endTime,
-      status: 'booked',
-      bookingCode,
-      notes
+      UserId: userId,
+      ResourceId: resourceId,
+      ResourceDetailType: resourceDetailType,
+      ResourceDetailId: resourceDetailId,
+      StartTime: startTime,
+      EndTime: endTime,
+      Status: 'booked',
+      BookingCode: bookingCode,
+      Notes: notes
     });
     res.status(201).json(booking);
   },
 
   async getMyBookings(req, res) {
     const userId = req.user.id;
-    const bookings = await Booking.findAll({ where: { userId }, include: Resource });
+    const bookings = await Booking.findAll({ where: { UserId: userId } });
+    if (!bookings || bookings.length === 0) {
+      return res.status(404).json({ error: "Belum ada booking untuk user ini." });
+    }
     res.json(bookings);
   },
 
-  async getResourceBookings(req, res) {
-    const { resourceId } = req.params;
-    const bookings = await Booking.findAll({ where: { resourceId }, include: Resource });
+  async getBookingsByResourceDetail(req, res) {
+    const { resourceId, resourceDetailId } = req.params;
+    const resource = await require('../models').Resource.findByPk(resourceId);
+    if (!resource) {
+      return res.status(404).json({ error: "Resource tidak ditemukan." });
+    }
+    const bookings = await Booking.findAll({
+      where: { ResourceId: resourceId, ResourceDetailId: resourceDetailId }
+    });
+    if (!bookings || bookings.length === 0) {
+      return res.status(404).json({ error: "Belum ada booking untuk resource detail ini." });
+    }
     res.json(bookings);
   }
 };

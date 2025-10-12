@@ -8,7 +8,7 @@ const isOwner = require('../middlewares/isOwner');
 router.post('/', auth, isOwner, availabilityController.createSlot);
 router.put('/:id', auth, isOwner, availabilityController.updateSlot);
 router.delete('/:id', auth, isOwner, availabilityController.deleteSlot);
-// Public (lihat slot resource)
-router.get('/resource/:resourceId', availabilityController.getSlotsByResource);
+// Public (lihat slot resource detail)
+router.get('/:resourceId/:resourceDetailId', availabilityController.getSlotsByResourceDetail);
 
 module.exports = router;
