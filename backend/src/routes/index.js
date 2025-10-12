@@ -20,6 +20,7 @@ const isOwner = require("../middlewares/isOwner");
 // Auth
 router.post("/login", authController.login);
 router.post("/register", userController.register);
+router.post("/register2", userController.register2);
 router.get("/validate-admin", authenticate, isAdmin, (req, res) => {
   res.json({ message: "Admin validated" });
 });
