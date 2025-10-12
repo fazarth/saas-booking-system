@@ -12,6 +12,7 @@ export default function Register() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPopUpVisible, setPopUpVisible] = useState(false);
   const [popType, setPopType] = useState("");
   const [popupMessage, setPopUpMessage] = useState("");
@@ -83,6 +84,7 @@ export default function Register() {
       } else {
         ShowError("Gagal Register! Silakan coba lagi.");
       }
+      setIsSubmitting(false);
     }
   };
 
@@ -132,9 +134,10 @@ export default function Register() {
 
           <button
             type="submit"
+            disabled={isSubmitting}
             className="linear mt-2 w-full rounded-xl bg-brand-500 py-[12px] text-base font-medium text-white transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 dark:text-white dark:hover:bg-brand-300 dark:active:bg-brand-200"
           >
-            Register
+            {isSubmitting ? "Registering..." : "Register"}
           </button>
         </form>
         <div className="mt-4">

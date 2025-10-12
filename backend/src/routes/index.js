@@ -32,7 +32,7 @@ router.get("/validate-customer", authenticate, isCustomer, (req, res) => {
 
 // User
 router.get("/users", auth, isAdmin, userController.getAll);
-router.post("/users/assign-role", auth, isAdmin, userController.assignRole);
+router.post("/users/assign-role", userController.assignRole);
 
 // Role
 router.post("/roles", auth, isAdmin, roleController.create);
