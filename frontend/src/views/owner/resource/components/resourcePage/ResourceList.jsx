@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "api/axios";
 import ResourceCard from "components/card/ResourceCard";
 import NFt from "assets/img/nfts/Nft3.png";
@@ -9,7 +8,6 @@ const ResourceList = ({ refresh }) => {
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchResources = async () => {
@@ -79,10 +77,12 @@ const ResourceList = ({ refresh }) => {
             <ResourceCard
               id={item.id}
               resourceId={item.resourceId}
-              title={item.location}
-              description={item.facilities}
-              type={item.floor}
-              isActive={true}
+              title={item.subject || item.location || "No Title"}
+              description={
+                item.facilities || `${item.level} - ${item.courseType}`
+              }
+              type={item.courseType || item.floor || "Unknown"}
+              isActive={item.isActive ?? true}
               image={NFt}
             />
           </div>

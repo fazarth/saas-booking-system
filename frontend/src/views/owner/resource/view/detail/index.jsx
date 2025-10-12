@@ -77,16 +77,21 @@ const ResourceDetail = () => {
         const resResource = await axios.get(
           `/resources/${resourceId}/detail/${id}`
         );
-        console.log("Response resource:", resResource.data);
+        // console.log("Response resource:", resResource.data);
         const data = Array.isArray(resResource.data)
           ? resResource.data[0]
           : resResource.data;
 
-        setResource(data);
-        setResourceType(data.resourceType);
-        setEditForm(initialDetailForms[data.resourceType]);
+        const resParent = await axios.get("/resources");
+        const parentList = resParent.data;
+        const parent = parentList.find((r) => r.id === data.resourceId);
 
-        const resSlots = await axios.get(`/availability/resource/${id}`);
+        setResource({ ...data, resourceType: parent?.resourceType });
+        setResourceType(parent?.resourceType);
+
+        // setEditForm(initialDetailForms[data.resourceType]);
+
+        const resSlots = await axios.get(`/availability/${resourceId}/${id}`);
         setSlots(resSlots.data || null);
 
         setError(null);
@@ -212,21 +217,89 @@ const ResourceDetail = () => {
           />
 
           <div className="text-black-600 mt-2 space-y-1">
-            <p>
-              <span className="font-semibold">Capacity:</span>{" "}
-              {resource.capacity}
-            </p>
-            <p>
-              <span className="font-semibold">Facilities:</span>{" "}
-              {resource.facilities}
-            </p>
-            <p>
-              <span className="font-semibold">Floor:</span> {resource.floor}
-            </p>
-            <p>
-              <span className="font-semibold">Price/Hour:</span> Rp{" "}
-              {resource.pricePerHour}
-            </p>
+            {resourceType === "room" && (
+              <>
+                <p>
+                  <span className="font-semibold">Capacity:</span>{" "}
+                  {resource.capacity}
+                </p>
+                <p>
+                  <span className="font-semibold">Facilities:</span>{" "}
+                  {resource.facilities}
+                </p>
+                <p>
+                  <span className="font-semibold">Floor:</span> {resource.floor}
+                </p>
+                <p>
+                  <span className="font-semibold">Price/Hour:</span> Rp{" "}
+                  {resource.pricePerHour}
+                </p>
+              </>
+            )}
+
+            {resourceType === "course" && (
+              <>
+                <p>
+                  <span className="font-semibold">Subject:</span>{" "}
+                  {resource.subject}
+                </p>
+                <p>
+                  <span className="font-semibold">Level:</span> {resource.level}
+                </p>
+                <p>
+                  <span className="font-semibold">Duration:</span>{" "}
+                  {resource.durationPerHours} menit
+                </p>
+                <p>
+                  <span className="font-semibold">Fee:</span> Rp {resource.fee}
+                </p>
+                <p>
+                  <span className="font-semibold">Type:</span>{" "}
+                  {resource.courseType}
+                </p>
+              </>
+            )}
+
+            {resourceType === "health" && (
+              <>
+                <p>
+                  <span className="font-semibold">Specialization:</span>{" "}
+                  {resource.specialization}
+                </p>
+                <p>
+                  <span className="font-semibold">Clinic Address:</span>{" "}
+                  {resource.clinicAddress}
+                </p>
+                <p>
+                  <span className="font-semibold">Fee:</span> Rp {resource.fee}
+                </p>
+                <p>
+                  <span className="font-semibold">Duration:</span>{" "}
+                  {resource.durationMin} menit
+                </p>
+              </>
+            )}
+
+            {resourceType === "vehicle" && (
+              <>
+                <p>
+                  <span className="font-semibold">Brand:</span> {resource.brand}
+                </p>
+                <p>
+                  <span className="font-semibold">Model:</span> {resource.model}
+                </p>
+                <p>
+                  <span className="font-semibold">Year:</span> {resource.year}
+                </p>
+                <p>
+                  <span className="font-semibold">Type:</span> {resource.type}
+                </p>
+                <p>
+                  <span className="font-semibold">Rental Price:</span> Rp{" "}
+                  {resource.rentalPrice}
+                </p>
+              </>
+            )}
           </div>
 
           <div className="mt-4">
