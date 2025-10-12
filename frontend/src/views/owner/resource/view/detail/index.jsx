@@ -310,11 +310,15 @@ const ResourceDetail = () => {
               slots.map((slot) => (
                 <div key={slot.id} className="text-black-600">
                   <p>
-                    <span className="font-semibold">Day:</span> {slot.dayOfWeek}
+                    <span className="font-semibold">Day:</span> {slot.DayOfWeek}
                   </p>
                   <p>
                     <span className="font-semibold">Time:</span>{" "}
-                    {slot.startTime} - {slot.endTime}
+                    {slot.StartTime} - {slot.EndTime}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Status:</span>{" "}
+                    {slot.IsActive ? "Active ✅" : "Inactive ❌"}
                   </p>
                 </div>
               ))
