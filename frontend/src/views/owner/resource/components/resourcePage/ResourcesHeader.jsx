@@ -144,7 +144,9 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
 
       await axios.post(`/availability`, {
         ...availabilityForm,
-        dayOfWeek: availabilityForm.dayOfWeek.join(", "),
+        dayOfWeek: Array.isArray(availabilityForm.dayOfWeek)
+          ? availabilityForm.dayOfWeek.join(", ")
+          : availabilityForm.dayOfWeek,
         resourceId: activeResourceId,
         resourceDetailId: res.data.id,
         resourceDetailType: resourceForm.resourceType,
