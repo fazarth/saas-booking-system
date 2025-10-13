@@ -55,11 +55,11 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
   };
 
   const [resourceDetailForm, setResourceDetailForm] = useState(
-    initialDetailForms[resourceForm.resourceType || "room"]
+    initialDetailForms[resourceForm.resourceType]
   );
 
   const [availabilityForm, setAvailabilityForm] = useState({
-    dayOfWeek: "",
+    dayOfWeek: [],
     startTime: "",
     endTime: "",
     startDate: "",
@@ -105,10 +105,8 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
       const res = await axios.post("/resources", resourceForm);
       console.log("Resource created:", res.data);
 
-      // simpan id resource yg baru dibuat
       setActiveResourceId(res.data.id);
 
-      // lanjut ke detail
       setStep("detail");
 
       setShowSuccess(true);
@@ -146,6 +144,7 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
 
       await axios.post(`/availability`, {
         ...availabilityForm,
+        dayOfWeek: availabilityForm.dayOfWeek.join(", "),
         resourceId: activeResourceId,
         resourceDetailId: res.data.id,
         resourceDetailType: resourceForm.resourceType,

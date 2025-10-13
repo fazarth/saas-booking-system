@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
+
+const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu", "Minggu"];
 
 const SlotsAvailabilityForm = ({
   formData,
@@ -7,20 +9,75 @@ const SlotsAvailabilityForm = ({
   onCancel,
   loading,
 }) => {
+  const [errors, setErrors] = useState({});
+
+  const handleDayChange = (day) => {
+    let updated = [...(formData.dayOfWeek || [])];
+    if (updated.includes(day)) {
+      updated = updated.filter((d) => d !== day);
+    } else {
+      updated.push(day);
+    }
+    onChange({ target: { name: "dayOfWeek", value: updated } });
+
+    if (updated.length > 0) {
+      clearError("dayOfWeek");
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newErrors = {};
+
+    if (!formData.dayOfWeek || formData.dayOfWeek.length === 0) {
+      newErrors.dayOfWeek = "Pilih minimal 1 hari.";
+    }
+    if (!formData.startTime) newErrors.startTime = "Start Time wajib diisi.";
+    if (!formData.endTime) newErrors.endTime = "End Time wajib diisi.";
+    if (!formData.startDate) newErrors.startDate = "Start Date wajib diisi.";
+    if (!formData.endDate) newErrors.endDate = "End Date wajib diisi.";
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      onSubmit(e);
+    }
+  };
+
+  const clearError = (field) => {
+    if (errors[field]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+  };
+
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-700">
           Day of Week
         </label>
-        <input
-          type="text"
-          name="dayOfWeek"
-          value={formData.dayOfWeek}
-          onChange={onChange}
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-          placeholder="e.g. Monday"
-        />
+        <div className="mt-2 flex flex-wrap gap-2">
+          {days.map((day) => (
+            <label key={day} className="flex items-center space-x-1">
+              <input
+                type="checkbox"
+                checked={formData.dayOfWeek?.includes(day) || false}
+                onChange={(e) => {
+                  handleDayChange(day);
+                  clearError("dayOfWeek");
+                }}
+              />
+              <span>{day}</span>
+            </label>
+          ))}
+        </div>
+        {errors.dayOfWeek && (
+          <p className="text-sm text-red-500">{errors.dayOfWeek}</p>
+        )}
       </div>
 
       <div>
@@ -31,9 +88,15 @@ const SlotsAvailabilityForm = ({
           type="time"
           name="startTime"
           value={formData.startTime}
-          onChange={onChange}
+          onChange={(e) => {
+            onChange(e);
+            clearError("startTime");
+          }}
           className="mt-1 block w-full rounded-md border border-gray-300 p-2"
         />
+        {errors.startTime && (
+          <p className="text-sm text-red-500">{errors.startTime}</p>
+        )}
       </div>
 
       <div>
@@ -44,9 +107,15 @@ const SlotsAvailabilityForm = ({
           type="time"
           name="endTime"
           value={formData.endTime}
-          onChange={onChange}
+          onChange={(e) => {
+            onChange(e);
+            clearError("endTime");
+          }}
           className="mt-1 block w-full rounded-md border border-gray-300 p-2"
         />
+        {errors.endTime && (
+          <p className="text-sm text-red-500">{errors.endTime}</p>
+        )}
       </div>
 
       <div>
@@ -57,9 +126,15 @@ const SlotsAvailabilityForm = ({
           type="date"
           name="startDate"
           value={formData.startDate}
-          onChange={onChange}
+          onChange={(e) => {
+            onChange(e);
+            clearError("startDate");
+          }}
           className="mt-1 block w-full rounded-md border border-gray-300 p-2"
         />
+        {errors.startDate && (
+          <p className="text-sm text-red-500">{errors.startDate}</p>
+        )}
       </div>
 
       <div>
@@ -70,9 +145,15 @@ const SlotsAvailabilityForm = ({
           type="date"
           name="endDate"
           value={formData.endDate}
-          onChange={onChange}
+          onChange={(e) => {
+            onChange(e);
+            clearError("endDate");
+          }}
           className="mt-1 block w-full rounded-md border border-gray-300 p-2"
         />
+        {errors.endDate && (
+          <p className="text-sm text-red-500">{errors.endDate}</p>
+        )}
       </div>
 
       <div className="flex items-center">
