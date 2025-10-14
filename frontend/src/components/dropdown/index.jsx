@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 
 const Dropdown = ({
   button,
@@ -9,11 +9,29 @@ const Dropdown = ({
   setOpenWrapper,
 }) => {
   const ref = useRef();
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  const isOpen = openWrapper !== undefined ? openWrapper : internalOpen;
+  const toggleOpen = () => {
+    if (setOpenWrapper) {
+      setOpenWrapper(!openWrapper);
+    } else {
+      setInternalOpen(!internalOpen);
+    }
+  };
+
+  const close = () => {
+    if (setOpenWrapper) {
+      setOpenWrapper(false);
+    } else {
+      setInternalOpen(false);
+    }
+  };
 
   useEffect(() => {
     const handler = (e) => {
       if (ref.current && !ref.current.contains(e.target)) {
-        if (setOpenWrapper) setOpenWrapper(false);
+        close();
       }
     };
     document.addEventListener("mousedown", handler);
@@ -22,7 +40,7 @@ const Dropdown = ({
 
   return (
     <div className="relative flex w-full" ref={ref}>
-      <div className="flex w-full" onClick={() => setOpenWrapper(!openWrapper)}>
+      <div className="flex w-full" onClick={toggleOpen}>
         {button}
       </div>
       <div
@@ -30,7 +48,7 @@ const Dropdown = ({
           animation
             ? animation
             : "origin-top-right transition-all duration-300 ease-in-out"
-        } ${openWrapper ? "scale-100" : "scale-0"}`}
+        } ${isOpen ? "scale-100" : "scale-0"}`}
       >
         {children}
       </div>
