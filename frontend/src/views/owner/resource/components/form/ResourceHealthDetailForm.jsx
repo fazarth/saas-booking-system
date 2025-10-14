@@ -1,78 +1,123 @@
-import React from "react";
+import React, { useState } from "react";
 
-const ResourceHealthDetailForm = ({
+const ResourceCourseDetailForm = ({
   formData,
   onChange,
   onSubmit,
   onCancel,
   loading,
 }) => {
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.spesialization)
+      newErrors.spesialization = "Spesialisasi wajib diisi.";
+    if (!formData.clinicAddress)
+      newErrors.clinicAddress = "Alamat Klinik wajib diisi.";
+    if (!formData.fee || formData.fee <= 0)
+      newErrors.fee = "Biaya harus lebih dari 0.";
+    if (!formData.durationMin || formData.durationMin <= 0)
+      newErrors.durationMin = "Durasi Menit harus lebih dari 0.";
+    return newErrors;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newErrors = validate();
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      onSubmit(e);
+    }
+  };
+
+  const clearError = (field) => {
+    if (errors[field]) {
+      setErrors((prev) => {
+        const updated = { ...prev };
+        delete updated[field];
+        return updated;
+      });
+    }
+  };
+
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          Location
+          Spesialisasi
         </label>
         <input
           type="text"
-          name="location"
-          value={formData.location}
-          onChange={onChange}
+          name="spesialization"
+          value={formData.spesialization}
+          onChange={(e) => {
+            onChange(e);
+            clearError("spesialization");
+          }}
           className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-          placeholder="Ex: Lantai 2"
+          placeholder="Ex: Mata"
         />
+        {errors.spesialization && (
+          <p className="text-sm text-red-500">{errors.spesialization}</p>
+        )}
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          Capacity
+          Alamat Klinik
         </label>
+        <input
+          type="text"
+          name="clinicAddress"
+          value={formData.clinicAddress}
+          onChange={(e) => {
+            onChange(e);
+            clearError("clinicAddress");
+          }}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2"
+          placeholder="Ex: Jalan Merdeka, Jakarta"
+        />
+        {errors.clinicAddress && (
+          <p className="text-sm text-red-500">{errors.clinic}</p>
+        )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Biaya</label>
         <input
           type="number"
-          name="capacity"
-          value={formData.capacity}
-          onChange={onChange}
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-          placeholder="Ex: 10"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Facilities
-        </label>
-        <input
-          type="text"
-          name="facilities"
-          value={formData.facilities}
-          onChange={onChange}
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-          placeholder="Ex: AC, Proyektor"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Floor</label>
-        <input
-          type="text"
-          name="floor"
-          value={formData.floor}
-          onChange={onChange}
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-          placeholder="Ex: 2"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Price</label>
-        <input
-          type="number"
-          name="pricePerHour"
-          value={formData.pricePerHour}
-          onChange={onChange}
+          name="fee"
+          value={formData.fee}
+          onChange={(e) => {
+            onChange(e);
+            clearError("fee");
+          }}
           className="mt-1 block w-full rounded-md border border-gray-300 p-2"
           placeholder="Ex: 150000"
         />
+        {errors.fee && <p className="text-sm text-red-500">{errors.fee}</p>}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Durasi (Menit)
+        </label>
+        <input
+          type="number"
+          name="durationMin"
+          value={formData.durationMin}
+          onChange={(e) => {
+            onChange(e);
+            clearError("durationMin");
+          }}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2"
+          placeholder="Ex: 30"
+        />
+        {errors.durationMin && (
+          <p className="text-sm text-red-500">{errors.durationMin}</p>
+        )}
       </div>
 
       <div className="flex justify-end gap-2 pt-4">
@@ -95,4 +140,4 @@ const ResourceHealthDetailForm = ({
   );
 };
 
-export default ResourceHealthDetailForm;
+export default ResourceCourseDetailForm;

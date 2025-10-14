@@ -148,7 +148,7 @@ const ResourceDetail = () => {
     e.preventDefault();
     const requiredFieldsMap = {
       course: ["subject", "level"],
-      health: ["specialization", "clinicAddress"],
+      health: ["spesialization", "clinicAddress"],
       room: ["location", "capacity"],
       vehicle: ["brand", "model"],
     };
@@ -263,8 +263,8 @@ const ResourceDetail = () => {
             {resourceType === "health" && (
               <>
                 <p>
-                  <span className="font-semibold">Specialization:</span>{" "}
-                  {resource.specialization}
+                  <span className="font-semibold">Spesialisasi:</span>{" "}
+                  {resource.spesialization}
                 </p>
                 <p>
                   <span className="font-semibold">Clinic Address:</span>{" "}

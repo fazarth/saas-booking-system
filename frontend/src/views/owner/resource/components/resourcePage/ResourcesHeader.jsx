@@ -32,7 +32,7 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
       courseType: "",
     },
     health: {
-      specialization: "",
+      spesialization: "",
       clinicAddress: "",
       fee: "",
       durationMin: "",
@@ -57,6 +57,12 @@ const ResourcesHeader = ({ onCreateSuccess }) => {
   const [resourceDetailForm, setResourceDetailForm] = useState(
     initialDetailForms[resourceForm.resourceType]
   );
+
+  useEffect(() => {
+    if (resourceForm.resourceType) {
+      setResourceDetailForm(initialDetailForms[resourceForm.resourceType]);
+    }
+  }, [resourceForm.resourceType]);
 
   const [availabilityForm, setAvailabilityForm] = useState({
     dayOfWeek: [],

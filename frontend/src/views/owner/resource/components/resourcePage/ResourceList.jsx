@@ -76,12 +76,40 @@ const ResourceList = ({ refresh }) => {
           <div key={item.id} className="cursor-pointer">
             <ResourceCard
               id={item.id}
-              resourceId={item.resourceId}
-              title={item.subject || item.location || "No Title"}
-              description={
-                item.facilities || `${item.level} - ${item.courseType}`
+              resourceId={item.resourceId || item.id}
+              title={
+                item.resourceType === "course"
+                  ? item.subject
+                  : item.resourceType === "health"
+                  ? item.spesialization
+                  : item.resourceType === "room"
+                  ? item.location
+                  : item.resourceType === "vehicle"
+                  ? item.brand
+                  : "No Title"
               }
-              type={item.courseType || item.floor || "Unknown"}
+              description={
+                item.resourceType === "course"
+                  ? `${item.level} - ${item.courseType}`
+                  : item.resourceType === "health"
+                  ? item.clinicAddress
+                  : item.resourceType === "room"
+                  ? item.facilities
+                  : item.resourceType === "vehicle"
+                  ? `${item.model} - ${item.year}`
+                  : ""
+              }
+              type={
+                item.resourceType === "course"
+                  ? item.courseType
+                  : item.resourceType === "health"
+                  ? "Health"
+                  : item.resourceType === "room"
+                  ? "Room"
+                  : item.resourceType === "vehicle"
+                  ? "Vehicle"
+                  : "Unknown"
+              }
               isActive={item.isActive ?? true}
               image={NFt}
             />
