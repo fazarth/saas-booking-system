@@ -80,7 +80,7 @@ const ResourceCourseDetailForm = ({
           placeholder="Ex: Jalan Merdeka, Jakarta"
         />
         {errors.clinicAddress && (
-          <p className="text-sm text-red-500">{errors.clinic}</p>
+          <p className="text-sm text-red-500">{errors.clinicAddress}</p>
         )}
       </div>
 
