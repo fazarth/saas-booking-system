@@ -64,7 +64,7 @@ module.exports = {
   async getSlotsByResourceDetail(req, res) {
     const { resourceId, resourceDetailId } = req.params;
     const slots = await AvailabilitySlot.findAll({
-      where: { ResourceId: resourceId, ResourceDetailId: resourceDetailId, IsActive: true }
+      where: { ResourceId: resourceId, ResourceDetailId: resourceDetailId}
     });
     if (!slots || slots.length === 0) {
       return res.status(404).json({ error: "Belum ada jadwal tersedia untuk resource detail ini." });
