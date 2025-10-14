@@ -109,7 +109,11 @@ export default function Register() {
     const newErrors = {};
     if (!formData.fullname.trim()) newErrors.fullname = "Full Name wajib diisi";
     if (!formData.username.trim()) newErrors.username = "Username wajib diisi";
-    if (!formData.email.trim()) newErrors.email = "Email wajib diisi";
+    if (!formData.email.trim()) {
+      newErrors.email = "Email wajib diisi";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Format email tidak valid";
+    }
     if (!formData.password.trim()) newErrors.password = "Password wajib diisi";
     return newErrors;
   };
