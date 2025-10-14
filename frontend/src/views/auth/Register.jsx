@@ -6,19 +6,23 @@ import { useNavigate } from "react-router-dom";
 import PopUpNotification from "components/popup/PopUpNotification";
 
 export default function Register() {
-  const [fullname, setFullname] = useState("");
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [address, setAddress] = useState("");
-  const [password, setPassword] = useState("");
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [formData, setFormData] = useState({
+    fullname: "",
+    username: "",
+    email: "",
+    phoneNumber: "",
+    address: "",
+    password: "",
+  });
 
+  const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPopUpVisible, setPopUpVisible] = useState(false);
   const [popType, setPopType] = useState("");
   const [popupMessage, setPopUpMessage] = useState("");
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const routes = [
     {
@@ -73,31 +77,22 @@ export default function Register() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
-    if (!fullname || !email || !username || !password) {
-      ShowError("Fullname, Username, Email, dan Password wajib diisi!");
-      return;
-    }
+    const newErrors = validate();
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
 
     setIsSubmitting(true);
     const role = getRoleType();
 
     try {
       const res = await axios.post("/register", {
-        fullname,
-        username,
-        email,
-        phoneNumber,
-        address,
-        password,
+        ...formData,
         roleType: role,
       });
 
       if (res.status === 201 || res.status === 200) {
         ShowSuccess("Akun berhasil dibuat! Silakan login.");
-        setTimeout(() => {
-          navigate("/auth/login");
-        }, 1500);
+        setTimeout(() => navigate("/auth/login"), 1500);
       }
     } catch (err) {
       if (err.response?.status === 400) {
@@ -107,6 +102,37 @@ export default function Register() {
       }
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.fullname.trim()) newErrors.fullname = "Full Name wajib diisi";
+    if (!formData.username.trim()) newErrors.username = "Username wajib diisi";
+    if (!formData.email.trim()) newErrors.email = "Email wajib diisi";
+    if (!formData.password.trim()) newErrors.password = "Password wajib diisi";
+    return newErrors;
+  };
+
+  const clearError = (field) => {
+    if (errors[field]) {
+      setErrors((prev) => {
+        const updated = { ...prev };
+        delete updated[field];
+        return updated;
+      });
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
     }
   };
 
@@ -120,28 +146,36 @@ export default function Register() {
           Enter your username and password to login
         </p>
 
-        <form onSubmit={handleRegister}>
+        <form onSubmit={handleRegister} className="space-y-4">
           <InputField
             variant="auth"
             extra="mb-3"
             label="Full Name"
             placeholder="Full Name"
             id="fullname"
+            name="fullname"
             type="text"
-            value={fullname}
-            onChange={(e) => setFullname(e.target.value)}
+            value={formData.fullname}
+            onChange={handleInputChange}
           />
+          {errors.fullname && (
+            <p className="mt-1 text-sm text-red-500">{errors.fullname}</p>
+          )}
 
           <InputField
             variant="auth"
             extra="mb-3"
             label="Username"
-            placeholder="username"
+            placeholder="Username"
             id="username"
+            name="username"
             type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={formData.username}
+            onChange={handleInputChange}
           />
+          {errors.username && (
+            <p className="mt-1 text-sm text-red-500">{errors.username}</p>
+          )}
 
           <InputField
             variant="auth"
@@ -149,10 +183,14 @@ export default function Register() {
             label="Email"
             placeholder="mail@example.com"
             id="email"
+            name="email"
             type="text"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={formData.email}
+            onChange={handleInputChange}
           />
+          {errors.email && (
+            <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+          )}
 
           <InputField
             variant="auth"
@@ -160,9 +198,10 @@ export default function Register() {
             label="Phone Number"
             placeholder="081234567890"
             id="phoneNumber"
+            name="phoneNumber"
             type="text"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
+            value={formData.phoneNumber}
+            onChange={handleInputChange}
           />
 
           <InputField
@@ -171,9 +210,10 @@ export default function Register() {
             label="Address"
             placeholder="Jalan Merdeka, Jakarta"
             id="address"
+            name="address"
             type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
+            value={formData.address}
+            onChange={handleInputChange}
           />
 
           <InputField
@@ -182,10 +222,14 @@ export default function Register() {
             label="Password"
             placeholder="Min. 8 characters"
             id="password"
+            name="password"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formData.password}
+            onChange={handleInputChange}
           />
+          {errors.password && (
+            <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+          )}
 
           <button
             type="submit"
@@ -195,6 +239,7 @@ export default function Register() {
             {isSubmitting ? "Registering..." : "Register"}
           </button>
         </form>
+
         <div className="mt-4">
           <span className="text-sm font-medium text-navy-700 dark:text-gray-600">
             Sudah punya akun?
